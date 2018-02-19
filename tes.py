@@ -9,12 +9,15 @@ key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
 # exit()
 tabel_master = 'kelas'
+# def goblok1(row):
+
+# def goblok2(row):
 
 def findPattern(tabel, dari):
     if dari is None:
         dari = []
-    else:
-        print(dari)
+    # else:
+    #     print(dari)
     q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name).where(
             key_column_usage.table_schema == 'mmt-its'
         ).where(
@@ -32,38 +35,54 @@ def findPattern(tabel, dari):
             count = count + 1
 
     # print count
-    fromRow = [];
+    fromRow = []
+    # print(tabel)
+    # print(cur)
+    
+
     if len(cur) != count:
         for i, row in enumerate(cur):
-            # print row
-            fromRow.append(dari)
+            # print(row)
+            fromRow.append(list(dari))
+            # print(dari)
             if row[2] == tabel:
                 if row[2] in fromRow[i]:
-                    print('continue')
-                    continue
+                    if row[1] not in fromRow[i]:
+                        # print(tabel+'-'+row[2]+" > "+ row[1])
+                        # print(row[2]+' start')
+                        fromRow[i].append(row[1])
+                        findPattern(row[1], fromRow[i])
+                        # print('continue :'+row[1]+' - '+row[2])
+                    else:
+                        continue 
                 else:
                     if row[2] == tabel_master:
+                        if len(dari) == 0:
+                            fromRow[i].append(tabel_master)
                         fromRow[i].append(row[1])
-                        print('pindah ke '+row[1]+' dari '+tabel_master)
+                        # print('pindah ke '+row[1]+' dari '+tabel_master)
                     # elif row[1]:
+                        # print('babik '+row[2])
                     else:
+                        # print('anjeng')
                         fromRow[i].append(row[2])
-                        print('pindah ke '+fromRow[i][-1]+' dari '+row[1])
+                        # print('pindah ke '+fromRow[i][-1]+' dari '+row[1])
                     # fromRow[i].append(row[2])
 
-                    print(row[1]+' start')
+                    # print(row[1]+' start')
                     findPattern(row[1], fromRow[i])
-                    print(row[1]+' done')
+                    # print(row[1]+' done')
         # print(fromRow)
             else:
-                if row[1] in fromRow[i]: 
+                if row[2] in fromRow[i]:
+                    # print('continue :'+row[1]+' - '+row[2])
                     continue
                 else:
-                    # fromRow[i].append(row[2])
-                    print(row[2]+" > "+ row[1])
-                    print(row[2]+' start')
+                    fromRow[i].append(row[2])
+                    # print(tabel+'-'+row[2]+" > "+ row[1])
+                    # print(row[2]+' start')
                     findPattern(row[2], fromRow[i])
-                    print(row[2]+' done')
+                    # print(row[2]+' done')
 
     else:
         print('pucuk '+ tabel)
@@ -71,6 +90,7 @@ def findPattern(tabel, dari):
 
     # if row.
     # db.close()
+    return 1
 
 # dari = []
 # if dari is None:
