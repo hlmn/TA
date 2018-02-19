@@ -1,6 +1,7 @@
-from pypika import MySQLQuery, Table, Field
+from pypika import MySQLQuery, Table, Field, Order
 import MySQLdb
 import MySQLdb.cursors as cursors
+import pprint
 db = MySQLdb.connect(host="db.muhammadhilman.com",    # your host, usually localhost
                      user="hlmn",         # your username
                      passwd="liverpoolfc",  # your password
@@ -10,7 +11,7 @@ key_column_usage = Table('key_column_usage')
 # exit()
 tabel_master = 'kelas'
 # def goblok1(row):
-
+pattern = []
 # def goblok2(row):
 
 def findPattern(tabel, dari):
@@ -18,7 +19,7 @@ def findPattern(tabel, dari):
         dari = []
     # else:
     #     print(dari)
-    q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name).where(
+    q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name).orderby('table_name', order=Order.asc).where(
             key_column_usage.table_schema == 'mmt-its'
         ).where(
             key_column_usage.referenced_table_name.notnull()
@@ -87,6 +88,7 @@ def findPattern(tabel, dari):
     else:
         print('pucuk '+ tabel)
         print(dari)
+        pattern.append(dari)
 
     # if row.
     # db.close()
@@ -97,3 +99,6 @@ def findPattern(tabel, dari):
 #     print('goblok')
 
 findPattern('kelas', None)
+pattern.sort(key=len)
+pprint.pprint(pattern)
+db.close()
