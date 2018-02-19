@@ -100,5 +100,6 @@ def findPattern(tabel, dari):
 
 findPattern('kelas', None)
 pattern.sort(key=len)
+#tes
 pprint.pprint(pattern)
 db.close()
