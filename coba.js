@@ -1,5 +1,4 @@
-// const mysql = require('mysql2');
-var Q = require("q");
+sysvar Q = require("q");
 
 // create the connection to database
 var knex = require('knex')({
