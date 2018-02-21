@@ -72,7 +72,7 @@
 			<key>isToolbarVisible</key>
 			<true/>
 			<key>queries</key>
-			<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'absen' or `table_name` = 'absen');
+			<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'kelas');
 
 SELECT matakuliah.*
 FROM matakuliah 
@@ -149,6 +149,7 @@ WHERE `kelas`.`id_kelas`='IF-101';
 	<array/>
 	<key>queryHistory</key>
 	<array>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'absen')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'absen' or `table_name` = 'absen')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'users' or `table_name` = 'users')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'matakuliah' or `table_name` = 'matakuliah')</string>
@@ -214,7 +215,6 @@ ON `jadwal`.`nip`=`dosen`.`nip`
 JOIN `kelas` 
 ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` 
 WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `matakuliah`.* FROM `matakuliah` JOIN `kelasmatkul` ON `kelasmatkul`.`id_matkul`=`matakuliah`.`id_matkul` JOIN `ambilkelas` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `mahasiswa` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kartu` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `absen` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `jadwal` ON `absen`.`id_jadwal`=`jadwal`.`id_jadwal` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
 	</array>
 	<key>rdbms_type</key>
 	<string>mysql</string>

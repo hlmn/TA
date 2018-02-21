@@ -32,11 +32,14 @@ def findPattern(tabel, dari, join):
     cur = db.cursor()
     cur.execute(str(q))
     cur = list(cur)
-    count = 0
+    count = 0 #parent
+    countChild = 0
     # print(cur)
     for row in cur:
         if row[2] == tabel and row[2] != tabel_master:
             count = count + 1
+        if tabel == row[1] and row[1] != tabel_master:
+            countChild = countChild + 1
 
     # print count
     fromRow = []
@@ -46,6 +49,7 @@ def findPattern(tabel, dari, join):
     
 
     if len(cur) != count:
+        # if len(cur) != countChild:
         for i, row in enumerate(cur):
             # print(row)
             fromRow.append(list(dari))
@@ -144,48 +148,48 @@ findPattern('kelas', None, None)
 pprint.pprint(pattern)
 # pprint.pprint(joinBoi)
 #tes
-pprint.pprint(joinBoi)
-# pprint(list(joinBoi.values()))
-print(len(pattern))
-for i, value in enumerate(pattern):
-    q = None
-    # print(value)
-    for j, row in reversed(list(enumerate(value))):
-        # print(row+', ')
-        # print j
-        if j == 0:
-            continue;
-        if j == len(value)-1:
-            # q = 
-            # print("select "+value[j])
-            # print("from "+value[j])
-            # print("inner join "+value[j-1])
-            # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
-            field1 = Field(joinBoi[i][row]['column_name'], alias=None, table=joinBoi[i][row]['table_name'])
-            field2 = Field(joinBoi[i][row]['referenced_column_name'], alias=None, table=joinBoi[i][row]['referenced_table_name'])
-            tabel = Table(value[j])
-            tabel1= Table(value[j-1])
-            q = MySQLQuery.from_(tabel).join(
-                    tabel1
-                ).on(
-                    getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
-                ).select(tabel.star)
-            # print(str(q))
+# pprint.pprint(joinBoi)
+# # pprint(list(joinBoi.values()))
+# print(len(pattern))
+# for i, value in enumerate(pattern):
+#     q = None
+#     # print(value)
+#     for j, row in reversed(list(enumerate(value))):
+#         # print(row+', ')
+#         # print j
+#         if j == 0:
+#             continue;
+#         if j == len(value)-1:
+#             # q = 
+#             # print("select "+value[j])
+#             # print("from "+value[j])
+#             # print("inner join "+value[j-1])
+#             # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
+#             field1 = Field(joinBoi[i][row]['column_name'], alias=None, table=joinBoi[i][row]['table_name'])
+#             field2 = Field(joinBoi[i][row]['referenced_column_name'], alias=None, table=joinBoi[i][row]['referenced_table_name'])
+#             tabel = Table(value[j])
+#             tabel1= Table(value[j-1])
+#             q = MySQLQuery.from_(tabel).join(
+#                     tabel1
+#                 ).on(
+#                     getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
+#                 ).select(tabel.star)
+#             # print(str(q))
 
-        else:
-            q = q.join(
-                    Table(value[j-1])
-                ).on(
-                    getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
-                )
-            # print(j-1)
-            # print("inner join "+value[j-1])
-            # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
-    # print(str(q))
-    q = q.select(Table(value[-1]).star).where(
-            getattr(Table(value[0]), "id_kelas") == "IF-101"
-        )
-    print(str(q))         
+#         else:
+#             q = q.join(
+#                     Table(value[j-1])
+#                 ).on(
+#                     getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
+#                 )
+#             # print(j-1)
+#             # print("inner join "+value[j-1])
+#             # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
+#     # print(str(q))
+#     q = q.select(Table(value[-1]).star).where(
+#             getattr(Table(value[0]), "id_kelas") == "IF-101"
+#         )
+#     print(str(q))         
 
     # print('\n')
     
