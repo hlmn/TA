@@ -72,7 +72,9 @@
 			<key>isToolbarVisible</key>
 			<true/>
 			<key>queries</key>
-			<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'kelas');
+			<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal');
+
+select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'absen' or `table_name` = 'absen');
 
 SELECT matakuliah.*
 FROM matakuliah 
@@ -149,72 +151,26 @@ WHERE `kelas`.`id_kelas`='IF-101';
 	<array/>
 	<key>queryHistory</key>
 	<array>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'absen')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'absen' or `table_name` = 'absen')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'users')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'jadwal')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kelasmatkul' or `table_name` = 'kelasmatkul')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'matakuliah' or `table_name` = 'matakuliah')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'dosenambilkelas' or `table_name` = 'dosenambilkelas')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'dosen' or `table_name` = 'dosen')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kelas' or `table_name` = 'kelas')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'dosenambilkelas' or `table_name` = 'dosenambilkelas')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'absen' or `table_name` = 'absen')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'kelas')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'absen')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'users' or `table_name` = 'users')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'matakuliah' or `table_name` = 'matakuliah')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kartu' or `table_name` = 'kartu')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'mahasiswa' or `table_name` = 'mahasiswa')</string>
 		<string>mahasiswa</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelasmatkul' or `table_name` = 'kelasmatkul')</string>
-		<string>SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `ambilkelas` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `mahasiswa` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kartu` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `absen` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `jadwal` ON `absen`.`id_jadwal`=`jadwal`.`id_jadwal` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `users`.* FROM `users` JOIN `dosen` ON `dosen`.`user`=`users`.`id` JOIN `dosenambilkelas` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `kelasmatkul` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>select matakuliah.*
-from matakuliah
-inner join kelasmatkul
-on kelasmatkul.id_matkul=matakuliah.id_matkul
-inner join jadwal
-on jadwal.id_kelas_matkul=kelasmatkul.id_kelas_matkul
-inner join kelas
-on jadwal.id_kelas=kelas.id_kelas
-where kelas.id_kelas='IF-101'</string>
-		<string>SELECT `mahasiswa`.* 
-FROM `users` 
-JOIN `mahasiswa` 
-ON `mahasiswa`.`user`=`users`.`id` 
-JOIN `ambilkelas` 
-ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` 
-JOIN `kelasmatkul` 
-ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` 
-JOIN `jadwal` 
-ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` 
-JOIN `kelas` 
-ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` 
-WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `users`.* 
-FROM `users` 
-JOIN `mahasiswa` 
-ON `mahasiswa`.`user`=`users`.`id` 
-JOIN `ambilkelas` 
-ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` 
-JOIN `kelasmatkul` 
-ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` 
-JOIN `jadwal` 
-ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` 
-JOIN `kelas` 
-ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` 
-WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `users`.* FROM `users` JOIN `mahasiswa` ON `mahasiswa`.`user`=`users`.`id` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `users`.* FROM `users` JOIN `dosen` ON `dosen`.`user`=`users`.`id` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `matakuliah`.* FROM `matakuliah` JOIN `kelasmatkul` ON `kelasmatkul`.`id_matkul`=`matakuliah`.`id_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `matakuliah`.* FROM `matakuliah` JOIN `kelasmatkul` ON `kelasmatkul`.`id_matkul`=`matakuliah`.`id_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'
-
-SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` JOIN `kode_kelas` `kode_kelas2` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `matakuliah`.* 
-FROM `matakuliah` 
-JOIN `kelasmatkul` 
-ON `kelasmatkul`.`id_matkul`=`matakuliah`.`id_matkul` 
-JOIN `dosenambilkelas` 
-ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` 
-JOIN `dosen` 
-ON `dosenambilkelas`.`nip`=`dosen`.`nip` 
-JOIN `jadwal` 
-ON `jadwal`.`nip`=`dosen`.`nip` 
-JOIN `kelas` 
-ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` 
-WHERE `kelas`.`id_kelas`='IF-101'</string>
 	</array>
 	<key>rdbms_type</key>
 	<string>mysql</string>
