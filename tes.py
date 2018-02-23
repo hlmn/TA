@@ -2,14 +2,58 @@ from pypika import MySQLQuery, Table, Field, Order
 import MySQLdb
 import MySQLdb.cursors as cursors
 import pprint
-db = MySQLdb.connect(host="db.muhammadhilman.com",    # your host, usually localhost
-                     user="hlmn",         # your username
-                     passwd="liverpoolfc",  # your password
+import time
+import os
+import datetime
+import shlex, subprocess
+waktu = int(time.time())
+# while True:
+#     # print(waktu)
+#     pass
+
+os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
+os.system('mysql -u root -e "DROP DATABASE IF EXISTS mmtitsbaru;"')
+os.system('mysql -u root -e "CREATE DATABASE mmtitsbaru;"')
+os.system('mysql -u root -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
+
+
+# os.system('cat <(echo "SET FOREIGN_KEY_CHECKS=0;") imports.sql | mysql -u root')
+
+# exit()
+os.system('mysql -u root mmtitsbaru < backup'+str(waktu)+'.sql')
+
+db = MySQLdb.connect(host="127.0.0.1",
+                     user="root",         # your username
+                     # passwd="liverpoolfc",  # your password
                      db="information_schema") 
+dbSelect = MySQLdb.connect(host="127.0.0.1",
+                     user="root",         # your username
+                     # passwd="liverpoolfc",  # your password
+                     db="mmt-its")
+dbInsert = MySQLdb.connect(host="127.0.0.1",
+                     user="root",         # your username
+                     # passwd="liverpoolfc",  # your password
+                     db="mmtitsbaru")
 key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
 # exit()
+
+
 tabel_master = 'kelas'
+key_tabel_master = 'id_kelas'
+kelas = 'IF-101'
+setFirst = dbSelect.cursor()
+master = Table(tabel_master)
+query = MySQLQuery.from_(master).select(master.star).where(
+    getattr(master, key_tabel_master) == kelas
+)
+setFirst.execute(str(query))
+if setFirst.rowcount < 1:
+    exit()
+query = MySQLQuery.into(tabel_master).insert(setFirst.fetchall()[0])
+setFirst = dbInsert.cursor()
+setFirst.execute(str(query))
+dbInsert.commit()
 # def goblok1(row):
 pattern = []
 joinBoi = []
@@ -49,7 +93,6 @@ def findPattern(tabel, dari, join):
             # cur.remove(row)
             if row[0] == 'PRIMARY':
                 primary = primary + 1
-            print('kontol')
         if row[2] == tabel and row[2] != tabel_master:
             count = count + 1
             # print('a')
@@ -64,21 +107,19 @@ def findPattern(tabel, dari, join):
     
     if index > 0:
         length = len(cur)-index
-        print('kontol')
     else: 
         length = len(cur)
-        print('memek')
     # print(count)
     # exit(
     # if tabel == 'kelasmatkul':
     #     print('absen '+str(length)+' - '+str(count))
     #     exit()
-    print(length)
+    # print(length)
     if length != count:
         # if len(cur) != countChild:
         if count == 0 and primary > 0 and tabel is not tabel_master:
-            print('pucuk '+ tabel)
-            print(dari)
+            # print('pucuk '+ tabel)
+            # print(dari)
             pattern.append(dari)
             joinBoi.append(join)
             ujungChild = list(dari)
@@ -100,7 +141,7 @@ def findPattern(tabel, dari, join):
                         if row[1] not in fromRow[i]:
                             # print(tabel+'-'+row[2]+" > "+ row[1])
                             # print(row[2]+' start')
-                            print(row[3]+'-'+row[4])
+                            # print(row[3]+'-'+row[4])
                             joinRow[i][row[1]] = {
                                 'table_name' : row[1],
                                 'column_name' : row[3],
@@ -145,7 +186,7 @@ def findPattern(tabel, dari, join):
                             # print('pindah ke '+fromRow[i][-1]+' dari '+row[1])
                         # fromRow[i].append(row[2])
 
-                        print(row[3]+'-'+row[4])
+                        # print(row[3]+'-'+row[4])
                         # print(row[1]+' start')
                         findPattern(row[1], fromRow[i], joinRow[i])
                         # print(row[1]+' done')
@@ -155,7 +196,7 @@ def findPattern(tabel, dari, join):
                         # print('continue :'+row[1]+' - '+row[2])
                         continue
                     else:
-                        print(row[3]+'-'+row[4])
+                        # print(row[3]+'-'+row[4])
                         fromRow[i].append(row[2])
                         joinRow[i][row[2]] = {
                                 'table_name' : row[1],
@@ -169,74 +210,121 @@ def findPattern(tabel, dari, join):
                         # print(row[2]+' done')
 
     else:
-        print('pucuk '+ tabel)
-        print(dari)
+        # print('pucuk '+ tabel)
+        # print(dari)
         pattern.append(dari)
         # exit()
         joinBoi.append(join)
     # if row.
     # db.close()
     return 1
-
-# dari = []
-# if dari is None:
-#     print('goblok')
-
-findPattern('kelas', None, None)
-# pattern.sort(key=len)
-# 
-pprint.pprint(pattern)
-print(len(pattern))
-
-# pprint.pprint(joinBoi)
-#tes
-# pprint.pprint(joinBoi)
-# # pprint(list(joinBoi.values()))
-# print(len(pattern))
-for i, value in enumerate(pattern):
-    q = None
-    # print(value)
-    for j, row in reversed(list(enumerate(value))):
-        # print(row+', ')
-        # print j
-        if j == 0:
-            continue;
-        if j == len(value)-1:
-            # joinBoi[i][row]
-            # q = 
-            # print("select "+value[j])
-            # print("from "+value[j])
-            # print("inner join "+value[j-1])
-            # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
-            # field1 = Field(joinBoi[i][row]['column_name'], alias=None, table=joinBoi[i][row]['table_name'])
-            # field2 = Field(joinBoi[i][row]['referenced_column_name'], alias=None, table=joinBoi[i][row]['referenced_table_name'])
-            tabel = Table(value[j])
-            tabel1= Table(value[j-1])
-            q = MySQLQuery.from_(tabel).join(
-                    tabel1
-                ).on(
-                    getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
-                ).select(tabel.star)
-            # print(str(q))
-
-        else:
-            q = q.join(
-                    Table(value[j-1])
-                ).on(
-                    getattr(Table(joinBoi[i][row]['table_name']), joinBoi[i][row]['column_name']) == getattr(Table(joinBoi[i][row]['referenced_table_name']), joinBoi[i][row]['referenced_column_name'])
-                )
-            # print(j-1)
-            # print("inner join "+value[j-1])
-            # print("on "+joinBoi[i][row]['table_name']+'.'+joinBoi[i][row]['column_name']+'='+joinBoi[i][row]['referenced_table_name']+'.'+joinBoi[i][row]['referenced_column_name'])
-    # print(str(q))
-    q = q.select(Table(value[-1]).star).where(
-            getattr(Table(value[0]), "id_kelas") == "IF-101"
-        )
-    print(str(q)+'\n')         
-
-    # print('\n')
+def closeDB():
+    dbInsert.close()
+    dbSelect.close()
+    db.close()
+def insertToDb(result):
+    listTabel = []
+    setCursor = dbInsert.cursor()
+    setCursor.execute('SET foreign_key_checks = 0')
+    for i, j in enumerate(result):
+        for key in j.keys():
+            # print 
+            if key not in listTabel:
+                listTabel.append(key)
+            cur = dbSelect.cursor()
+            cur.execute(j[key]['selectQuery'])
+            for row in cur:
+                data = []
+                for item in row:
+                    if isinstance(item, int):
+                        data.append(item)
+                    else:
+                        if item is None:
+                            data.append(None)
+                        else:
+                            data.append(str(item))
+                query = MySQLQuery.into(key).insert(data)
+                print(str(query))
+                try:
+                    insertCursor = dbInsert.cursor()
+                    # insertCursor.execute('SET foreign_key_checks = 0')
+                    insertCursor.execute(str(query))
+                    dbInsert.commit()
+                except (MySQLdb.Error, MySQLdb.Warning) as e:
+                    print(e)
+            # exit()
+            # if key =='jadwal':
+            #     exit()
     
-print len(joinBoi)
-print len(pattern)
+    # pprint.pprint(listTabel)
+    # exit()
+    closeDB()
+    f = open("statement.sql","w+")
+    f.write('SET foreign_key_checks = 0;')
+    for table in listTabel:
+        f.write('CREATE TABLE tbl_new AS SELECT DISTINCT * FROM '+table+';LOCK TABLES '+table+' WRITE, tbl_new WRITE;truncate '+table+';insert '+table+' select * from tbl_new;drop table tbl_new;UNLOCK TABLES;')
+    f.write('SET foreign_key_checks = 0;')
+    f.close()
+    cmd = 'mysql -u root mmtitsbaru < statement.sql';
+    args = shlex.split(cmd)
+    p = os.system(cmd)
 
-db.close()
+def main():   
+    findPattern('kelas', None, None)
+
+    counter = 0
+    jumlah = len(pattern)
+    result = []
+
+    while (jumlah != counter):
+
+        print(pattern)
+        # print(counter)
+        insertPattern = list(pattern)
+        insertJoin = list(joinBoi)
+        for i, value in enumerate(insertPattern):
+
+            q = None
+            if value:
+                tbl = value[-1]
+            for j, row in reversed(list(enumerate(value))):
+                if j == 0:
+                    if len(value)>1 :
+                        q = q.select(Table(value[-1]).star).where(
+                            getattr(Table(value[0]), key_tabel_master) == kelas
+                    )
+                    if value:
+                        del pattern[i][-1]
+                    if not pattern[i]:
+                        counter = counter + 1
+                    continue;
+                if j == len(value)-1:
+
+                    tabel = Table(value[j])
+                    tabel1= Table(value[j-1])
+                    q = MySQLQuery.from_(tabel).join(
+                            tabel1
+                        ).on(
+                            getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
+                        ).select(tabel.star)
+                    
+                    # print(str(q))
+
+                else:
+                    q = q.join(
+                            Table(value[j-1])
+                        ).on(
+                            getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
+                        )
+            if q is not None:
+                result.append({
+                    tbl: {
+                        'selectQuery' : str(q)
+                    }
+                })
+
+    insertToDb(result)
+
+if __name__ == "__main__":
+    main()
+
