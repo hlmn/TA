@@ -147,6 +147,8 @@ SELECT distinctive sound effects.`kode_kelas`.* FROM `kode_kelas` JOIN `kelasmat
 	<array/>
 	<key>queryHistory</key>
 	<array>
+		<string>SELECT `dosenambilkelas`.* FROM `dosenambilkelas` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>SELECT distinctive sound effects.kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101';</string>
 		<string>SELECT distinct `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
 		<string>SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kartu' or `table_name` = 'kartu')</string>
@@ -165,8 +167,6 @@ SELECT distinctive sound effects.`kode_kelas`.* FROM `kode_kelas` JOIN `kelasmat
 		<string>SELECT `absen`.* FROM `absen` JOIN `kartu` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
 		<string>SELECT `users`.* FROM `users` JOIN `dosen` ON `dosen`.`user`=`users`.`id` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'users')</string>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'jadwal')</string>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kelasmatkul' or `table_name` = 'kelasmatkul')</string>
 	</array>
 	<key>rdbms_type</key>
 	<string>mysql</string>

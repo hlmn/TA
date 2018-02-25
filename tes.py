@@ -1,38 +1,39 @@
 from pypika import MySQLQuery, Table, Field, Order
 import MySQLdb
 import MySQLdb.cursors as cursors
-import pprint
+from pprint import pprint
 import time
 import os
 import datetime
 import shlex, subprocess
+import copy
 waktu = int(time.time())
 # while True:
 #     # print(waktu)
 #     pass
 
 os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
-os.system('mysql -u root -e "DROP DATABASE IF EXISTS mmtitsbaru;"')
-os.system('mysql -u root -e "CREATE DATABASE mmtitsbaru;"')
-os.system('mysql -u root -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
+os.system('mysql -u root -pliverpoolfc -e "DROP DATABASE IF EXISTS mmtitsbaru;"')
+os.system('mysql -u root -pliverpoolfc -e "CREATE DATABASE mmtitsbaru;"')
+os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
 
 
 # os.system('cat <(echo "SET FOREIGN_KEY_CHECKS=0;") imports.sql | mysql -u root')
 
 # exit()
-os.system('mysql -u root mmtitsbaru < backup'+str(waktu)+'.sql')
+os.system('mysql -u root -pliverpoolfc mmtitsbaru < backup'+str(waktu)+'.sql')
 
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     # passwd="liverpoolfc",  # your password
+                     passwd="liverpoolfc",  # your password
                      db="information_schema") 
 dbSelect = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     # passwd="liverpoolfc",  # your password
+                     passwd="liverpoolfc",  # your password
                      db="mmt-its")
 dbInsert = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     # passwd="liverpoolfc",  # your password
+                     passwd="liverpoolfc",  # your password
                      db="mmtitsbaru")
 key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
@@ -64,21 +65,11 @@ def findPattern(tabel, dari, join):
         dari = []
     if join is None:
         join = []
-    # else:
-    #     print(dari)
-
-    # q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name, Field('column_name'),key_column_usage.referenced_column_name).orderby('table_name', order=Order.asc).where(
-    #         key_column_usage.table_schema == 'mmt-its'
-    #     ).where(
-    #         key_column_usage.referenced_table_name.notnull()
-    #     ).where(
-    #         (key_column_usage.referenced_table_name == tabel) | (Field('table_name') == tabel)
-    #     )
     q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name, Field('column_name'),key_column_usage.referenced_column_name).orderby('constraint_name', order=Order.asc).where(
-        key_column_usage.table_schema == 'mmt-its'
-    ).where(
-        (key_column_usage.referenced_table_name == tabel) | (Field('table_name') == tabel)
-    )
+            key_column_usage.table_schema == 'mmt-its'
+        ).where(
+            (key_column_usage.referenced_table_name == tabel) | (Field('table_name') == tabel)
+        )
     cur = db.cursor()
     cur.execute(str(q))
     cur = list(cur)
@@ -222,6 +213,7 @@ def closeDB():
     dbInsert.close()
     dbSelect.close()
     db.close()
+
 def insertToDb(result):
     listTabel = []
     setCursor = dbInsert.cursor()
@@ -265,20 +257,23 @@ def insertToDb(result):
         f.write('CREATE TABLE tbl_new AS SELECT DISTINCT * FROM '+table+';LOCK TABLES '+table+' WRITE, tbl_new WRITE;truncate '+table+';insert '+table+' select * from tbl_new;drop table tbl_new;UNLOCK TABLES;')
     f.write('SET foreign_key_checks = 0;')
     f.close()
-    cmd = 'mysql -u root mmtitsbaru < statement.sql';
+    cmd = 'mysql -u root -pliverpoolfc mmtitsbaru < statement.sql';
     args = shlex.split(cmd)
     p = os.system(cmd)
 
 def main():   
     findPattern('kelas', None, None)
-
+    # oldpattern = []
+    oldPattern = copy.deepcopy(pattern)
+    # print(oldPattern)
+    # exit()
     counter = 0
     jumlah = len(pattern)
     result = []
 
     while (jumlah != counter):
 
-        print(pattern)
+        # print(pattern)
         # print(counter)
         insertPattern = list(pattern)
         insertJoin = list(joinBoi)
@@ -324,6 +319,8 @@ def main():
                 })
 
     insertToDb(result)
+    pprint(oldPattern)
+    print(len(result))
 
 if __name__ == "__main__":
     main()
