@@ -203,7 +203,7 @@ let buildQuery = (ptrn) => {
 			resolve(ptrn)
 		})
 		.catch(() => {
-				reject('error')
+			reject('error')
 		});
 	});
 }
