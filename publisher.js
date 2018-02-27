@@ -10,7 +10,7 @@ var knex = require('knex')({
   // connection: {
   //   host: 'localhost',
   // 	user: 'root',
-  // 	database: 'goblok',
+
   // 	password: 'liverpoolfc'
   //   // database : 'myapp_test'
   // }
@@ -38,7 +38,7 @@ app.post('/', function (req, res) {
 
 });
 // test()
-// var kontol = [1, 2, 3, 4, 5]
+
 io.on('connection', function (socket) {
 
   //nunjukin id dari socketnya
@@ -115,7 +115,6 @@ function check(){
 	var mysqlClient = mysql.createConnection({
 	 	host: 'localhost',
 	  	user: 'root',
-	  	// database: 'goblok',
 	  	password: 'liverpoolfc'
 	});
 	// handleDisconnect(mysqlClient)
@@ -142,15 +141,7 @@ function isJson(str) {
     return true;
 }
 
-function anjing(str){
-	++counter;
-	knex('tes').insert({hilman: str})
-		.then((id) => {
-			console.log(id);
-		})
-	webServerPort.on('error', function(e) {
-	});	// console.log(str)
-}
+
 
 let getPattern = () => {
 	return new Promise( (resolve, reject) => {
@@ -170,15 +161,15 @@ let getPattern = () => {
 
 	})
 }
-let buildQuery = (ptrn) => { 
+let buildQuery = (ptrn) => { 	
 	return new Promise( (resolve, reject) => {
-		Promise.each(Object.keys(ptrn) , (item, index, length) => {
+		Promise.all(Object.keys(ptrn) , (item, index, length) => {
 			// console.log(item+' :')
 			var pattern = []
 			return Promise.each(ptrn[item]['pattern'], (item2, index2, length2) => {
 				// var query = knex.from(item);
 				// console.log(query)
-				if(length2 != 1)var query = knex.select(item2[0]+'.'+ptrn[item]['ref'][index2][item2[1]]['referenced_column_name']).from(item);
+				if(length2 != 1) var query = knex.select(item2[0]+'.'+ptrn[item]['ref'][index2][item2[1]]['referenced_column_name']).from(item);
 				else var query = knex.select(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).from(item);
 				item2.reverse();
 				query.innerJoin(
@@ -199,7 +190,6 @@ let buildQuery = (ptrn) => {
 				ptrn[item]['query']= pattern 
 			});
 		}).then(() =>{
-				// console.log('NGENTOT')
 			resolve(ptrn)
 		})
 		.catch(() => {
@@ -209,8 +199,8 @@ let buildQuery = (ptrn) => {
 }
 
 function tes(){
-	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --exclude_dbs='goblok' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='stdout' --exclude_dbs='goblok' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
+	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='stdout' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 		var string = data.toString().split('\n')
 		string.forEach((item, index) => {
@@ -248,6 +238,7 @@ getPattern().then((result) => {
 	return buildQuery(result)
 })
 .then((finalResult) => {
+	console.log(finalResult)
 	console.log('query builded')
 	tes();
 })

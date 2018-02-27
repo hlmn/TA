@@ -58,10 +58,10 @@ kelas = 'IF-101'
 # setFirst = dbInsert.cursor()
 # setFirst.execute(str(query))
 # dbInsert.commit()
-# def goblok1(row):
+
 pattern = []
 joinBoi = []
-# def goblok2(row):
+
 
 def findPattern(tabel, dari, join):
     if dari is None:
@@ -285,7 +285,7 @@ def main():
             q = None
             if value:
                 tbl = value[-1]
-            gembel = {}
+            joinnn = {}
             for j, row in reversed(list(enumerate(value))):
                 if j == 0:
                     # if len(value)>1 :
@@ -306,7 +306,7 @@ def main():
                 #         ).on(
                 #             getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
                 #         ).select(tabel.star)
-                #     gembel[row] = copy.deepcopy(insertJoin[i][row])
+                #     joinnn[row] = copy.deepcopy(insertJoin[i][row])
                 #     # print(str(q))
 
                 # else:
@@ -315,8 +315,8 @@ def main():
                 #         ).on(
                 #             getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
                 #         )
-                #     gembel[row] = copy.deepcopy(insertJoin[i][row])
-                gembel[row] = copy.deepcopy(insertJoin[i][row])
+                #     joinnn[row] = copy.deepcopy(insertJoin[i][row])
+                joinnn[row] = copy.deepcopy(insertJoin[i][row])
 
             if len(value) > 0 :
                 if tbl not in result.keys():
@@ -328,7 +328,7 @@ def main():
                 if value in result[tbl]['pattern']:
                     continue
                 result[tbl]['pattern'].append(list(value))
-                result[tbl]['ref'].append(dict(gembel))
+                result[tbl]['ref'].append(dict(joinnn))
                 # pprint(result[tbl])p
 
 

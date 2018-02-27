@@ -12,8 +12,8 @@ waktu = int(time.time())
 #     # print(waktu)
 #     pass
 
-# os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
-os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
+os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
+# os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
 os.system('mysql -u root -pliverpoolfc -e "DROP DATABASE IF EXISTS mmtitsbaru;"')
 os.system('mysql -u root -pliverpoolfc -e "CREATE DATABASE mmtitsbaru;"')
 os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
