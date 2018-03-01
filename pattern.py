@@ -347,8 +347,8 @@ def main():
     #     result[j].sort(key=len)
     # print(result)
     
-    # pprint(result)
-    # exit()
+    pprint(result)
+    exit()
     r = json.dumps(result)
     print(r)
     # sys.stdout.write(r)

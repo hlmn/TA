@@ -23,12 +23,12 @@ var amqp = require('amqplib');
 amqp.connect('amqp://localhost').then(function(conn) {
   process.once('SIGINT', function() { conn.close(); });
   return conn.createChannel().then(function(ch) {
-    var ok = ch.assertExchange('logs', 'fanout', {durable: true});
+    var ok = ch.assertExchange('Arsitektur_Jaringan_Komputer', 'fanout', {durable: true});
     ok = ok.then(function() {
       return ch.assertQueue('dasdsaaa', {exclusive: false});
     });
     ok = ok.then(function(qok) {
-      return ch.bindQueue(qok.queue, 'logs', '').then(function() {
+      return ch.bindQueue(qok.queue, 'Arsitektur_Jaringan_Komputer', '').then(function() {
         return qok.queue;
       });
     });
@@ -36,7 +36,7 @@ amqp.connect('amqp://localhost').then(function(conn) {
       return ch.consume(queue, logMessage, {noAck: true});
     });
     return ok.then(function() {
-      console.log(' [*] Waiting for logs. To exit press CTRL+C');
+      console.log(' [*] Waiting for Arsitektur_Jaringan_Komputer. To exit press CTRL+C');
     });
 
     function logMessage(msg) {

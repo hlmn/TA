@@ -15,7 +15,7 @@ var knex = require('knex')({
   //   // database : 'myapp_test'
   // }
 });
-
+var forEach = require('async-foreach').forEach;
 const knexQuery = require('knex')({
   client: 'mysql2',
   connection: {
@@ -117,7 +117,6 @@ function check(){
 					handleDisconnect(mysqlClient);
 					return;
 				}
-				// errorCallback(mysqlClient)
 				tes()
 				mysqlClient.destroy()
 				console.log('connected as id ' + mysqlClient.threadId);
@@ -129,15 +128,12 @@ function check(){
 	  	user: 'root',
 	  	password: 'liverpoolfc'
 	});
-	// handleDisconnect(mysqlClient)
-	// mysqlClient.connect()
 	mysqlClient.connect(function(err) {
 	  	if (err) {
 		    console.error('error connecting: ' + err);
 		    handleDisconnect(mysqlClient);
 			return;
 		}
-		// errorCallback(mysqlClient)
 		tes()
 		mysqlClient.destroy()
 		console.log('connected as id ' + mysqlClient.threadId);
@@ -147,30 +143,12 @@ function isJson(str) {
     try {
         JSON.parse(str);
     } catch (e) {
-    	// console.log()
         return false;
     }
     return true;
 }
 
-let sendMessage = (pesan) => {
-	return amqp.connect('amqp://localhost').then(function(conn) {
-	  return conn.createChannel().then(function(ch) {
-	    var ex = 'logs';
-	    var ok = ch.assertExchange(ex, 'fanout', {durable: true})
 
-	    // var message = process.argv.slice(2).join(' ') ||
-	      // 'info: Hello World!';
-
-	    return ok.then(function() {
-	      ch.publish(ex, '', Buffer.from(pesan));
-	      console.log(pesan)
-	      // console.log(" [x] Sent '%s'", pesan);
-	      return ch.close();
-	    });
-	  }).finally(function() { conn.close() });
-	}).catch(console.warn);
-}
 
 let getPattern = () => {
 
@@ -180,7 +158,6 @@ let getPattern = () => {
 				reject(`exec error: ${error}`);
 				return;
 			}
-			// console.log(stdout.toString())
 			if(isJson(stdout.toString())){
 				result = JSON.parse(stdout.toString());
 				resolve(result);
@@ -194,15 +171,17 @@ let getPattern = () => {
 let buildQuery = (ptrn) => { 	
 	return new Promise( (resolve, reject) => {
 		Promise.each(Object.keys(ptrn) , (item, index, length) => {
-			// console.log(item+' :')
 			var pattern = []
 			return Promise.each(ptrn[item]['pattern'], (item2, index2, length2) => {
-				// var query = knex.from(item);
-				// console.log(query)
 				if(length2 != 1) var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item2[1]]['referenced_column_name']).select().from(item);
 				else var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).select(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).from(item);
 				item2.reverse();
-				query.innerJoin(
+				if(item2.length == 1) query.innerJoin(
+							ptrn[item]['ref'][index2][item]['referenced_table_name'], 
+							ptrn[item]['ref'][index2][item]['table_name']+'.'+ptrn[item]['ref'][index2][item]['column_name'], 
+							ptrn[item]['ref'][index2][item]['referenced_table_name']+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']
+						)
+				else query.innerJoin(
 							ptrn[item]['ref'][index2][item]['table_name'], 
 							ptrn[item]['ref'][index2][item]['table_name']+'.'+ptrn[item]['ref'][index2][item]['column_name'], 
 							ptrn[item]['ref'][index2][item]['referenced_table_name']+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']
@@ -234,89 +213,106 @@ var promiseToFuckYou = function(data) {
 	});
 };
 var brpopQueue = function() {
-
-	var buildWhere  = (item, table,data) => {
+	
+	var buildWhere  = (item, table, data) => {
 		return new Promise((resolve, reject) => {
-			queryResult = item.clone()
+			queryResult = item.clone()			
 			return Promise.each(Object.keys(data), (item1, index1, length1) => {
 					queryResult.where(table+'.'+item1, data[item1]);
 				}).then(() => {
-					// console.log(queryResult)
+					tes = queryResult.clone()
+					console.log(tes.toString())
 					queryResult.client = knexQuery.client;
-					// resolve(queryResult)
-					// queryResult.client = knexQuery.client;
-					// queryResult.then(res => {
-					//   console.log('Fetched user one!', res);
-					//   process.exit()
-					// });
+					return queryResult
+				}).then((q) => {
+					resolve(q)
+				}).catch((err) => {
+					reject(err)
 				})
 		})
 	}
 	var getRuangan = function(table, query, data) {
 		return new Promise((resolve, reject) => {
 			var ruangan = [];
-			// console.log(query)
-			// query.each((item, index, length) => {
-			// 	console.log(item)
-			// })
-			hilman = query.reduce((item, index) => {// console.log(item)
-				return buildWhere(item, table, data)
-			}, query)
-			// hilman.then((res) => console.l)
-			// console.log(hilman)
-			Promise.each(hilman, (item, index, length) => {
-				console.log(item)
-				// item.then((res) => {console.log(res)})
-			})
-
-			// Promise.mapSeries(query, (item, index, length) => {
-			// 	console.log(item)
-			// 	var queryResult = item.clone()
-			// 	console.log(queryResult)
-			// 	return Promise.each(Object.keys(data), (item1, index1, length1) => {
-			// 		queryResult.where(table+'.'+item, data[item1]);
-			// 	})
-			// }).catch((err) => {
-			// 	console.log(err)
-			// })
-
-
+			function allDone(notAborted, arr) {
+				ruangan = ruangan.reduce((x, y) => x.includes(y) ? x : [...x, y], [])
+				console.log(ruangan)
+				resolve(ruangan)
+			}
+			forEach(query, function(item, index, arr) {
+				var done = this.async();
+				buildWhere(item, table, data).then((res) => {
+					forEach(res, function(item1, index1, arr1) {
+						var done1 = this.async()
+						ruangan.push(item1[Object.keys(item1)[0]]);
+						done1();
+					})
+					done();
+				})
+				.catch((err) => {
+					reject(err)
+				});
+			}, allDone);
 		})
 	}
-
+	var sendMessage = (pesan, destination) => {
+		return new Promise((resolve, reject) => {
+			return amqp.connect('amqp://localhost').then(function(conn) {
+			  return conn.createChannel().then(function(ch) {
+			    var ex = destination;
+			    var ok = ch.assertExchange(ex, 'fanout', {durable: true})
+			    return ok.then(function() {
+			      ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)));
+			      // console.log(pesan)
+			      // console.log(" [x] Sent '%s'", pesan);
+			      // ch.close();
+			      return [pesan, ch.close()]
+			    });
+			  }).spread((msg, ch) => {
+			  		return ch
+			  }
+			  ).finally(function() {
+				  	conn.close()
+				  	resolve(pesan)
+			  }).catch((err) => {
+			  	reject(err)
+			  });
+			}).catch(() => reject(console.warn));				
+		})
+	}
 	console.log('waiting msg')
 	redisClient.brpopAsync('maxwell', 0).then((data) => {
 		// console.log('We have retrieved the data from the front of the queue:', data);
 		log = data[1]
-		// async function
 		if(isJson(log)){
 			console.log(log)
 			log = JSON.parse(log)
-			console.log(log['table']+' :')
-			return getRuangan(log['table'], pattern[log['table']]['query'], log['data'])
-			// var query = pattern[log['table']]['query'][0].clone()
-			// console.log(query)
-			// return Promise.each(Object.keys(log['data']), (item, index, length) => {
-			// 	// console.log(query)
-			// 	query.where(log['table']+'.'+item, log['data'][item]);
-			// 	// console.log(query.toString())
-			// }).then(() => {
-			// 	console.log(query.toString())
-			// 	// console.log(query)
-			// 	ls.kill();
-			// 	process.exit()
-			// })
-			
-			// console.log(pattern[log['table']]['query'][0])
-			
+			// console.log(log['table']+' :')
+			return [getRuangan(log['table'], pattern[log['table']]['query'], log['data']), log]
 		}
-		// return redisClient.lpushAsync('logs', data[1])	  	
 	})
-	.then((data) => {
+	.spread((data, log) => {
+		function allDone(notAborted, arr) {
+			redisClient.lpushAsync('logs', JSON.stringify(log)).then((res) => {
+				console.log('log was saved to redis')
+				brpopQueue()
+			})
+		}
+		if(data.length > 0){
+			forEach(data, function (item, index, arr){
+				var done = this.async()
+				sendMessage(log, item).then((res) => {
+					console.log(JSON.stringify(res)+' sent to '+ item)
+					done();
+				}).catch((err) => {
+					redisClient.rpushAsync('maxwell', item).then((res) => {
 
-		console.log(data+'aaa')
-		// return
-		brpopQueue();
+					})
+
+				})
+			}, allDone)
+		}
+		else allDone(null, null)
 	})
 	.catch((err) => {
 		console.log(err)
@@ -343,7 +339,7 @@ var initRedis = function(){
 function tes(){
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties' --jdbc_options='serverTimezone="+moment.tz.guess()+"&zeroDateTimeBehavior=convertToNull&connectTimeout=5000'", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='stdout' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 		// var string = data.toString().split('\n')
@@ -367,7 +363,6 @@ function tes(){
 		// 	}
 		// })
 	  	console.log(`${data}`);
-
 	});
 	ls.stderr.on('data', (data) => {
 	  	console.log(`${data}`);

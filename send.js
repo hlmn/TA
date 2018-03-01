@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
-var amqp = require('amqplib/callback_api');
+// var amqp = require('amqplib/callback_api');
 
-amqp.connect('amqp://localhost', function(err, conn) {
-  conn.createChannel(function(err, ch) {
-    var ex = 'coy';
-    var msg = process.argv.slice(2).join(' ') || 'Hello World!';
+// amqp.connect('amqp://localhost', function(err, conn) {
+//   conn.createChannel(function(err, ch) {
+//     var ex = 'logs';
+//     var msg = process.argv.slice(2).join(' ') || 'Hello World!';
 
-    ch.assertExchange(ex, 'fanout', {durable: true});
-    ch.publish(ex, '', new Buffer(msg));
-    console.log(" [x] Sent %s", msg);
-  });
+//     ch.assertExchange(ex, 'fanout', {durable: true});
+//     ch.publish(ex, '', new Buffer(msg));
+//     console.log(" [x] Sent %s", msg);
+//   });
 
-  // setTimeout(function() { conn.close(); process.exit(0) }, 500);
-});
+//   setTimeout(function() { conn.close(); process.exit(0) }, 500);
+// });
+
+ruangan = ['1', '1'].reduce((x, y) => x.includes(y) ? x : [...x, y], [])
+console.log(ruangan)
