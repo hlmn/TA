@@ -37,7 +37,7 @@ dbSelect = MySQLdb.connect(host="127.0.0.1",
 dbInsert = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
                      passwd="liverpoolfc",  # your password
-                     db="mmtitsbaru")
+                     db="mmt-its")
 key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
 # exit()
@@ -266,6 +266,8 @@ def insertToDb(result):
 
 def main():   
     findPattern('kelas', None, None)
+    pprint(pattern)
+    exit()
     oldpattern = []
     oldPattern = copy.deepcopy(pattern)
     # print(oldPattern)

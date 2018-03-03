@@ -6,14 +6,7 @@ let checkMySQL, ls;
 const isPortAvailable = require('is-port-available');
 var port = 3306;
 var knex = require('knex')({
-  client: 'mysql2',
-  // connection: {
-  //   host: 'localhost',
-  // 	user: 'root',
-
-  // 	password: 'liverpoolfc'
-  //   // database : 'myapp_test'
-  // }
+  client: 'mysql2'
 });
 var forEach = require('async-foreach').forEach;
 const knexQuery = require('knex')({
@@ -23,10 +16,8 @@ const knexQuery = require('knex')({
   	user: 'root',
   	password: 'liverpoolfc',
   	database: 'mmt-its'
-    // database : 'myapp_test'
   }
 });
-
 var moment = require('moment-timezone');
 var amqp = require('amqplib');
 var Promise = require("bluebird");
@@ -49,7 +40,6 @@ app.post('/', function (req, res) {
   res.send('hello')
 
 });
-// test()
 
 io.on('connection', function (socket) {
 
@@ -285,34 +275,39 @@ var brpopQueue = function() {
 		// console.log('We have retrieved the data from the front of the queue:', data);
 		log = data[1]
 		if(isJson(log)){
-			console.log(log)
+			// console.log(log)
 			log = JSON.parse(log)
-			// console.log(log['table']+' :')
-			return [getRuangan(log['table'], pattern[log['table']]['query'], log['data']), log]
+			if(log['database'] === 'mmt-its') return [getRuangan(log['table'], pattern[log['table']]['query'], log['data']), log]
+			else return [null, log]
 		}
 	})
 	.spread((data, log) => {
+		// console.log('dasdasdsadas'+data)
 		function allDone(notAborted, arr) {
+			console.log(JSON.stringify(log))
 			redisClient.lpushAsync('logs', JSON.stringify(log)).then((res) => {
 				console.log('log was saved to redis')
 				brpopQueue()
 			})
 		}
-		if(data.length > 0){
-			forEach(data, function (item, index, arr){
-				var done = this.async()
-				sendMessage(log, item).then((res) => {
-					console.log(JSON.stringify(res)+' sent to '+ item)
-					done();
-				}).catch((err) => {
-					redisClient.rpushAsync('maxwell', item).then((res) => {
+		if(log['database'] !== 'mmt-its') allDone(null, null)
+		else {
+			if(data.length > 0){
+				forEach(data, function (item, index, arr){
+					var done = this.async()
+					sendMessage(log, item).then((res) => {
+						console.log(JSON.stringify(res)+' sent to '+ item)
+						done();
+					}).catch((err) => {
+						redisClient.rpushAsync('maxwell', item).then((res) => {
+
+						})
 
 					})
-
-				})
-			}, allDone)
+				}, allDone)
+			}
+			else allDone(null, null)
 		}
-		else allDone(null, null)
 	})
 	.catch((err) => {
 		console.log(err)
@@ -327,7 +322,7 @@ var initRedis = function(){
 	    }
 	});
 	redisClient.on('error', () =>{
-		console.log('goblok')
+		console.log('redis dc')
 	})
 	redisClient.on('ready', () => {
 		brpopQueue();
@@ -339,7 +334,7 @@ var initRedis = function(){
 function tes(){
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --include_dbs='mmt-its' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='stdout' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 		// var string = data.toString().split('\n')
