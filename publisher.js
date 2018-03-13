@@ -143,7 +143,7 @@ function isJson(str) {
 let getPattern = () => {
 
 	return new Promise( (resolve, reject) => {
-		py = exec("python pattern.py", (error, stdout, stderr) => {
+		py = exec("python pattern-server.py", (error, stdout, stderr) => {
 			if (error) {
 				reject(`exec error: ${error}`);
 				return;
@@ -272,7 +272,6 @@ var brpopQueue = function() {
 	}
 	console.log('waiting msg')
 	redisClient.brpopAsync('maxwell', 0).then((data) => {
-		// console.log('We have retrieved the data from the front of the queue:', data);
 		log = data[1]
 		if(isJson(log)){
 			// console.log(log)
@@ -299,10 +298,10 @@ var brpopQueue = function() {
 						console.log(JSON.stringify(res)+' sent to '+ item)
 						done();
 					}).catch((err) => {
-						redisClient.rpushAsync('maxwell', item).then((res) => {
+						console.log('asoy');
+						redisClient.lpushAsync('failed', item).then((res) => {
 
 						})
-
 					})
 				}, allDone)
 			}
