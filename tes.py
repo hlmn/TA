@@ -12,8 +12,8 @@ waktu = int(time.time())
 #     # print(waktu)
 #     pass
 
-os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
-# os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
+# os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
+os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
 os.system('mysql -u root -pliverpoolfc -e "DROP DATABASE IF EXISTS mmtitsbaru;"')
 os.system('mysql -u root -pliverpoolfc -e "CREATE DATABASE mmtitsbaru;"')
 os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
@@ -266,8 +266,8 @@ def main():
     findPattern('kelas', None, None)
     # oldpattern = []
     oldPattern = copy.deepcopy(pattern)
-    # print(oldPattern)
-    # exit()
+    print(len(oldPattern))
+    exit()
     counter = 0
     jumlah = len(pattern)
     result = []
@@ -319,9 +319,9 @@ def main():
                     }
                 })
 
-    insertToDb(result)
+    # insertToDb(result)
     # pprint(oldPattern)
-    # print(len(result))
+    print(len(result))
 
 if __name__ == "__main__":
     main()

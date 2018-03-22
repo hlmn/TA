@@ -13,13 +13,11 @@
 			<key>database</key>
 			<string>mmt-its</string>
 			<key>host</key>
-			<string>db.muhammadhilman.com</string>
+			<string>127.0.0.1</string>
 			<key>kcid</key>
-			<string>2424004930979978624</string>
+			<string>-3063128501251678064</string>
 			<key>name</key>
-			<string>db.muhammadhilman.com</string>
-			<key>port</key>
-			<integer>3306</integer>
+			<string>localhost</string>
 			<key>rdbms_type</key>
 			<string>mysql</string>
 			<key>sslCACertFileLocation</key>
@@ -39,39 +37,48 @@
 			<key>useSSL</key>
 			<integer>0</integer>
 			<key>user</key>
-			<string>hlmn</string>
+			<string>root</string>
 		</dict>
 		<key>session</key>
 		<dict>
 			<key>connectionEncoding</key>
 			<string>utf8</string>
+			<key>contentFilter</key>
+			<dict/>
 			<key>contentPageNumber</key>
 			<integer>1</integer>
 			<key>contentSelection</key>
 			<data>
-			YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFy
-			Y2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJX
-			TlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAF
-			gAdUdHlwZVRyb3dzXxAdU2VsZWN0aW9uRGV0YWlsVHlwZU5TSW5k
-			ZXhTZXTSFwsYGVxOU1JhbmdlQ291bnQQAIAG0hscHR5aJGNsYXNz
-			bmFtZVgkY2xhc3Nlc1pOU0luZGV4U2V0oh8gWk5TSW5kZXhTZXRY
-			TlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVk
-			QXJjaGl2ZXLRJidUZGF0YYABAAgAEQAaACMALQAyADcAQABGAE0A
-			VQBgAGcAagBsAG4AcQBzAHUAdwB8AIEAoQCmALMAtQC3ALwAxwDQ
-			ANsA3gDpAPIA9wEEAQcBGQEcASEAAAAAAAACAQAAAAAAAAAoAAAA
-			AAAAAAAAAAAAAAABIw==
+			YnBsaXN0MDDUAQIDBAUGNjdYJHZlcnNpb25YJG9iamVjdHNZJGFy
+			Y2hpdmVyVCR0b3ASAAGGoK0HCBUWFxgZHSQoLDA0VSRudWxs0wkK
+			CwwQFFdOUy5rZXlzWk5TLm9iamVjdHNWJGNsYXNzow0OD4ACgAOA
+			BKMREhOABYAGgAiADFR0eXBlVHJvd3NUa2V5c18QJlNlbGVjdGlv
+			bkRldGFpbFR5cGVQcmltYXJ5S2V5ZWREZXRhaWxz0wkKCxobHKCg
+			gAfSHh8gIVokY2xhc3NuYW1lWCRjbGFzc2VzXxATTlNNdXRhYmxl
+			RGljdGlvbmFyeaMgIiNcTlNEaWN0aW9uYXJ5WE5TT2JqZWN00goL
+			JSehJoAJgAvSCykqK1lOUy5zdHJpbmeACllpZF9qYWR3YWzSHh8t
+			Ll8QD05TTXV0YWJsZVN0cmluZ6MtLyNYTlNTdHJpbmfSHh8xMl5O
+			U011dGFibGVBcnJheaMxMyNXTlNBcnJhedIeHyI1oiIjXxAPTlNL
+			ZXllZEFyY2hpdmVy0Tg5VGRhdGGAAQAIABEAGgAjAC0AMgA3AEUA
+			SwBSAFoAZQBsAHAAcgB0AHYAegB8AH4AgACCAIcAjACRALoAwQDC
+			AMMAxQDKANUA3gD0APgBBQEOARMBFQEXARkBHgEoASoBNAE5AUsB
+			TwFYAV0BbAFwAXgBfQGAAZIBlQGaAAAAAAAAAgEAAAAAAAAAOgAA
+			AAAAAAAAAAAAAAAAAZw=
 			</data>
 			<key>contentSortColIsAsc</key>
 			<true/>
 			<key>contentViewport</key>
-			<string>{{0, 0}, {694, 450}}</string>
+			<string>{{0, 0}, {1310, 733}}</string>
 			<key>isToolbarVisible</key>
 			<true/>
 			<key>queries</key>
 			<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal');
 
-select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'absen' or `table_name` = 'absen');
-
+select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'matakuliah' or `table_name` = 'matakuliah');  
+select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (column_name = 'nrp') and table_name = 'absen';  
+select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal');
+select referenced_table_name, referenced_column_name from information_schema.key_column_usage where table_schema = 'mmt-its' and (column_name = 'nama') and table_name = 'mahasiswa';  
+select referenced_table_name, referenced_column_name from information_schema.key_column_usage where table_schema = 'mmt-its' and (column_name = 'id_kode_kelas') and table_name = 'kelasmatkul';
 SELECT matakuliah.*
 FROM matakuliah 
 INNER JOIN kelasmatkul
@@ -81,7 +88,14 @@ on kelasmatkul.id_kelas_matkul=jadwal.id_kelas_matkul
 inner join kelas
 on jadwal.id_kelas=kelas.id_kelas
 where kelas.id_kelas='Arsitektur_Jaringan_Komputer';
+SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` WHERE `kelasmatkul`.`id_kode_kelas`='C' AND `kelasmatkul`.`dosen`=null AND `kelasmatkul`.`semester`=null AND `kelasmatkul`.`id_kelas_matkul`='7e8e01a2-4f19-4eec-9e0c-7eb4f49d8f66' AND `kelasmatkul`.`id_matkul`='KI141312' AND `kelasmatkul`.`tahun_ajaran`='2017/2018';
 
+SELECT * FROM `absen` WHERE `nrp`='5111540000064' AND `id_absen`='60f34421-ff73-471c-a452-7d0d2f6259ff' AND `id_jadwal`='a044fa99-2764-42e1-b9c9-f4bfa80ab7ce' AND `waktu_absen`='2018-03-18 11:05:19';
+
+
+SELECT `ambilkelas`.* FROM `ambilkelas` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101';
+
+SELECT `ambilkelas`.* FROM `ambilkelas` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101';
 
 ['kelas', 'jadwal', 'dosen', 'dosenambilkelas', 'kelasmatkul', 'matakuliah'];
 
@@ -131,8 +145,13 @@ JOIN `kelas`
 ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` 
 WHERE `kelas`.`id_kelas`='IF-101';
 
+SELECT COUNT(*) FROM `ambilkelas` WHERE `nrp`='5111640000006' AND `id_kelas_matkul`='008c00c8-5bce-4dc6-b5d7-3244b92d023b';
+SELECT COUNT(*) `jumlah` FROM `ambilkelas` WHERE `nrp`='5111640000006' AND `id_kelas_matkul`='008c00c8-5bce-4dc6-b5d7-3244b92d023b';
+
 SELECT distinctive sound effects.`kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101';
 </string>
+			<key>table</key>
+			<string>jadwal</string>
 			<key>view</key>
 			<string>SP_VIEW_CUSTOMQUERY</string>
 			<key>windowVerticalDividerPosition</key>
@@ -147,31 +166,32 @@ SELECT distinctive sound effects.`kode_kelas`.* FROM `kode_kelas` JOIN `kelasmat
 	<array/>
 	<key>queryHistory</key>
 	<array>
-		<string>SELECT `dosenambilkelas`.* FROM `dosenambilkelas` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT distinctive sound effects.kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101';</string>
-		<string>SELECT distinct `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kode_kelas`.* FROM `kode_kelas` JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kartu' or `table_name` = 'kartu')</string>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'absen' or `table_name` = 'absen')</string>
-		<string>SELECT distinct `kartu`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>IF-10</string>
-		<string>SELECT distinct `jadwal`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `jadwal`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kelasmatkul`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `matakuliah`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kartu`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')</string>
-		<string>absen</string>
-		<string>SELECT `kartu`.* FROM `kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `kartu`.* FROM `absen` JOIN `kartu` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `absen`.* FROM `absen` JOIN `kartu` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `mahasiswa` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `ambilkelas` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kelasmatkul` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
-		<string>SELECT `users`.* FROM `users` JOIN `dosen` ON `dosen`.`user`=`users`.`id` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>select referenced_table_name, referenced_column_name from information_schema.key_column_usage where table_schema = 'mmtitsbaru' and (column_name = 'id_kode_kelas') and table_name = 'kelasmatkul'</string>
+		<string>SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `ambilkelas` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `mahasiswa` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `absen` ON `absen`.`nrp`=`mahasiswa`.`nrp` JOIN `jadwal` ON `absen`.`id_jadwal`=`jadwal`.`id_jadwal` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>SELECT * FROM `kelasmatkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `ambilkelas` ON `ambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `mahasiswa` ON `ambilkelas`.`nrp`=`mahasiswa`.`nrp` JOIN `kartu` ON `kartu`.`nrp`=`mahasiswa`.`nrp` JOIN `absen` ON `absen`.`id_kartu`=`kartu`.`id_kartu` JOIN `jadwal` ON `absen`.`id_jadwal`=`jadwal`.`id_jadwal` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'dosen' or `table_name` = 'dosen')  ORDER BY `constraint_name` ASC</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kelasmatkul' or `table_name` = 'kelasmatkul')  ORDER BY `constraint_name` ASC</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and not referenced_table_name is null and (referenced_table_name = 'kelas' or `table_name` = 'jadwal')</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'dosenambilkelas' or `table_name` = 'dosenambilkelas')  ORDER BY `constraint_name` ASC</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')  ORDER BY `constraint_name` ASC</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'kelas' or `table_name` = 'kelas')</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'users')</string>
+		<string>select `constraint_name`,`table_name`,`referenced_table_name`,`column_name`,`referenced_column_name` from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'users')</string>
 		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'users' or `table_name` = 'users')</string>
+		<string>select * from `information_schema`.key_column_usage where table_schema = 'mmt-its' and (referenced_table_name = 'jadwal' or `table_name` = 'jadwal')</string>
+		<string>SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'
+SELECT `kelasmatkul`.* FROM `kelasmatkul` JOIN `dosenambilkelas` ON `dosenambilkelas`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` JOIN `dosen` ON `dosenambilkelas`.`nip`=`dosen`.`nip` JOIN `jadwal` ON `jadwal`.`nip`=`dosen`.`nip` JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas`='IF-101'</string>
+		<string>select * from kode_kelas where not exists (SELECT distinct kode_kelas.* FROM `kode_kelas` LEFT OUTER JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` LEFT OUTER JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` LEFT OUTER JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas` = 'IF-101')</string>
+		<string>SELECT distinct kode_kelas.* FROM `kode_kelas` LEFT OUTER JOIN `kelasmatkul` ON `kelasmatkul`.`id_kode_kelas`=`kode_kelas`.`id_kode_kelas` LEFT OUTER JOIN `jadwal` ON `jadwal`.`id_kelas_matkul`=`kelasmatkul`.`id_kelas_matkul` LEFT OUTER JOIN `kelas` ON `jadwal`.`id_kelas`=`kelas`.`id_kelas` WHERE `kelas`.`id_kelas` = 'IF-101'</string>
 	</array>
 	<key>rdbms_type</key>
 	<string>mysql</string>
 	<key>rdbms_version</key>
-	<string>5.7.19-log</string>
+	<string>5.7.21-log</string>
 	<key>version</key>
 	<integer>1</integer>
 </dict>

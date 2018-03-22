@@ -41,7 +41,34 @@ dbInsert = MySQLdb.connect(host="127.0.0.1",
 key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
 # exit()
+manyToMany = {
+    "dosenambilkelas" : {
+        "kanan" : [
+            'dosen'
+        ],
+        "kiri" : [
+            'kelasmatkul'
+        ]
+    },
+    "ambilkelas" : {
+        "kanan" : [
+            'mahasiswa'
+        ],
+        "kiri": [
+           'kelasmatkul'
+        ] 
+    },
+    "absen" : {
+        "kanan" : [
+            'mahasiswa',
+            'kartu'
+        ],
+        "kiri": [
+           'jadwal'
+        ] 
+    }
 
+}
 
 tabel_master = 'kelas'
 key_tabel_master = 'id_kelas'
@@ -111,18 +138,19 @@ def findPattern(tabel, dari, join):
     # print(length)
     if length != count:
         # if len(cur) != countChild:
-        if count == 0 and primary > 0 and tabel is not tabel_master:
-            # print('pucuk '+ tabel)
-            # print(dari)
-            pattern.append(dari)
-            joinBoi.append(join)
-            ujungChild = list(dari)
-            del ujungChild[-1]
-            pattern.append(ujungChild)
-            joinChild = dict(join)
-            del joinChild[tabel]
-            joinBoi.append(joinChild)
-        else:
+        # if count == 0 and primary > 0 and tabel is not tabel_master:
+        #     # print('pucuk '+ tabel)
+        #     # print(dari)
+        #     if patternVerification(dari):
+        #         pattern.append(dari)
+        #         joinBoi.append(join)
+        #         ujungChild = list(dari)
+        #         del ujungChild[-1]
+        #         pattern.append(ujungChild)
+        #         joinChild = dict(join)
+        #         del joinChild[tabel]
+        #         joinBoi.append(joinChild)
+        # else:
             for i, row in enumerate(cur):
                 # print(row)
                 if row[2] is None: 
@@ -147,6 +175,9 @@ def findPattern(tabel, dari, join):
                             findPattern(row[1], fromRow[i], joinRow[i])
                             # print('continue :'+row[1]+' - '+row[2])
                         else:
+                            if patternVerification(dari):
+                                pattern.append(dari)
+                                joinBoi.append(join)
                             continue 
                     else:
                         if row[2] == tabel_master:
@@ -187,6 +218,9 @@ def findPattern(tabel, dari, join):
             # print(fromRow)
                 else:
                     if row[2] in fromRow[i]:
+                        if patternVerification(dari):
+                            pattern.append(dari)
+                            joinBoi.append(join)
                         # print('continue :'+row[1]+' - '+row[2])
                         continue
                     else:
@@ -206,12 +240,54 @@ def findPattern(tabel, dari, join):
     else:
         # print('pucuk '+ tabel)
         # print(dari)
-        pattern.append(dari)
-        # exit()
-        joinBoi.append(join)
+        if patternVerification(dari):
+            pattern.append(dari)
+            # exit()
+            joinBoi.append(join)
     # if row.
     # db.close()
     return 1
+def isManyToMany( tabel):
+    q = MySQLQuery.from_('key_column_usage').select(key_column_usage.constraint_name, Field('table_name'), key_column_usage.referenced_table_name, Field('column_name'),key_column_usage.referenced_column_name).orderby('constraint_name', order=Order.asc).where(
+            key_column_usage.table_schema == 'mmtitsbaru'
+        ).where(
+            (key_column_usage.referenced_table_name == tabel) | (Field('table_name') == tabel)
+        )
+    
+    cur = db.cursor(cursors.DictCursor)
+    cur.execute(str(q))
+    refCount = 0
+    length = 0
+    for value in cur:
+        if value['constraint_name'] == 'PRIMARY':
+            return False
+        if value['referenced_table_name'] is not None:
+            length += 1
+            if value['table_name'] == tabel:
+                refCount += 1
+    if refCount == length:
+        return True
+    else:
+        return False
+def patternVerification( dari):
+    for index, element in enumerate(dari):
+        try:
+            if isManyToMany(element):
+                if dari[index-1] in manyToMany[element]['kiri'] and dari[index+1] in manyToMany[element]['kanan']:
+                    continue
+                else:
+                    return False
+        except IndexError as e:
+            if isManyToMany(element):
+                if dari[index-1] in manyToMany[element]['kiri']:
+                    continue
+                else:
+                    return False
+    # killDb()
+    if dari in pattern:
+        return False
+    else:
+        return True
 def closeDB():
     dbInsert.close()
     dbSelect.close()
