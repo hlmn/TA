@@ -2,14 +2,14 @@ const { exec, spawn } = require('child_process');
 const parseSentence = require('minimist-string');
 var stringArgv = require('string-argv');
 var net = require('net');
-let checkMySQL, ls;
-const isPortAvailable = require('is-port-available');
+let checkMySQL;
 var port = 3306;
 var knex = require('knex')({
   client: 'mysql2'
 });
+const exitHook = require('async-exit-hook');
 var forEach = require('async-foreach').forEach;
-let knexQuery
+let knexQuery, ls;
 var moment = require('moment-timezone');
 var amqp = require('amqplib');
 var Promise = require("bluebird");
@@ -19,14 +19,12 @@ var PythonShell = require('python-shell');
 // var io = require('socket.io')(server);
 // server.listen(9999);
 var redis = require("redis")
-let redisClient;
+let redisClient, redisClientBlocking;
 var bluebird = require("bluebird");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 let pattern;
 var mysql      = require('mysql');
-var client = {};
-var ruanganlist = {};
 var counter = 0;
 
 let mysqlClient
@@ -73,7 +71,7 @@ let buildQuery = (ptrn) => {
 				else{
 					// console.log(item2)
 					// console.log(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name'])
-					var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).select(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).from(item);
+					var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).select().from(item);
 				} 
 				item2.reverse();
 				
@@ -113,6 +111,7 @@ var promiseToFuckYou = function(data) {
 		resolve(data)
 	});
 };
+// var isFailed = false;
 var brpopQueue = function() {
 	
 	var buildWhere  = (item, table, data) => {
@@ -164,7 +163,7 @@ var brpopQueue = function() {
 			    var ex = destination;
 			    var ok = ch.assertExchange(ex, 'fanout', {durable: true})
 			    return ok.then(function() {
-			      ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)));
+			      ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)), {persistent: true});
 			      // console.log(pesan)
 			      // console.log(" [x] Sent '%s'", pesan);
 			      // ch.close();
@@ -177,62 +176,193 @@ var brpopQueue = function() {
 				  	conn.close()
 				  	resolve(pesan)
 			  }).catch((err) => {
+			  	console.log('ga kekirik')
 			  	reject(err)
 			  });
-			}).catch(() => reject(console.warn));				
+			}).catch(() => {
+				console.log('ga kekirik')
+				reject(console.warn)
+			});				
 		})
 	}
-	var log, isFailed = false;
-	
-	redisClient.rpopAsync('failed').then((data) =>{
-		console.log('GOBLOKKK')
-		if (data === null){
+
+	var getAllRuangan = () => {
+		return new Promise((resolve, reject) => {
+			var ruangan = []
+			knexQuery.select('id_kelas').from('kelas')
+			.then((data) => {
+				return Promise.each(data, (item, index, length) => {
+					ruangan.push(item['id_kelas'])
+				})
+			})
+			.then(() =>{
+				resolve(ruangan)
+			});
+		})
+	}
+	var getOldRuangan = (data, log) => {
+	// console.log(log)
+		// data = []
+		if(!Array.isArray(data))
+			data = []
+
+		return new Promise((resolve, reject) => {
+			old = log['old']
+			table = log['table']
+			function oldDone(notAborted, arr){
+				console.log(data)
+				resolve(data)
+			} 
+			forEach(Object.keys(old), function (item, index, length) {
+			// Object.keys(old).map(item => {
+				var selesai = this.async()
+				knexQuery.column('referenced_table_name', 'referenced_column_name').select().from('information_schema.key_column_usage').where({
+					table_name : table,
+					column_name : item,
+					table_schema : 'mmt-its'
+				})
+				.then((res) => {
+					// console.log(res)
+
+					function checkPatternDone(notAborted, arr) {
+						// console.log(ruangan)
+						function allDone(notAborted, arr) {
+							// console.log(ruangan)
+							// resolve(data)
+							
+							selesai()
+						}
+						if (counter === 0){
+							// console.log(data)
+							selesai()
+						}
+						
+						else {
+							// if(res.length > 0){
+							forEach(pattern[res[0]['referenced_table_name']]['query'], function(item1, index1, length1) {
+								// console.log('a')
+								var query = item1.clone()
+								var done1 = this.async();
+								query.where(res[0]['referenced_table_name']+'.'+res[0]['referenced_column_name'], old[item])
+								console.log(query.toString())
+								// console.log(knexQuery.client)
+								query.client = knexQuery.client
+								query.then((row) => {
+									console.log(row.length)
+									// row.map((x) => {
+									// 	if (!data.includes(x['id_kelas']))data.push(x['id_kelas'])
+									// })
+									function selesaiPush(notAborted, arr){
+										done1()
+									}
+									if(row.length > 0){
+										forEach(row, function(item2, index2, length2) {
+											var kelar = this.async()
+											if (!data.includes(item2['id_kelas']))data.push(item2['id_kelas'])
+											kelar()
+										}, selesaiPush)
+									}
+									else done1()
+									
+									// console.log(data)
+									
+								})
+							}, allDone)
+							// }
+							// else selesai()
+							// else {
+							// 	resolve(data)
+							// }
+						}				
+					}
+					// var count = pattern[table]['pattern'].length
+					var counter = 0
+					if(res.length > 0){
+						forEach(pattern[table]['pattern'], function(pattern, indexPattern, patternLength) {
+							var done = this.async();
+							if (pattern.includes(res[0]['referenced_table_name']) && res[0]['referenced_table_name'] !== 'kelas'){
+								++counter
+								console.log('asik')
+							}
+							done();						
+						}, checkPatternDone)
+					}
+					else selesai()
+						
+					
+					
+				})
+				.catch((err) => {
+					reject(err)
+				})
+			}, oldDone)
+			
+		})
+	}
+	// var log;
+	// redisClientBlocking.brpopAsync('maxwell', 0)
+	redisClient.rpoplpushAsync('failed', 'failed').then((res) =>{
+		if (res === null){
 			// console.log('a')
-			console.log('waiting msg')
-			return redisClient.brpopAsync('maxwell', 0)
+			console.log('failed is empty, waiting msg')
+			return redisClientBlocking.brpopAsync('maxwell', 0)
 		} 
 		else {
-			console.log(data)
-			return data
+			// console.log(res)
+			return res
 		}
 	})
-	.then((data) => {
-		console.log('TOLOLLLL')
-		console.log(data)
+	.then((res) => {
+		// console.log(res)
 		// process.exit(0)
-		if (Array.isArray(data)){
-			log = data[1]
+		if (Array.isArray(res)){
+			log = res[1]
 		}
 		else {
-			log = data;
+		var log = res;
 			isFailed = true;
 		}
 		if(isJson(log)){
-			// console.log(log)
+			console.log(log)
 			log = JSON.parse(log)
-			console.log(pattern[log['table']])
-			if(log['database'] === 'mmt-its') return [getRuangan(log['table'], pattern[log['table']]['query'], log['data'], log), log]
-			else return [null, log]
+			// console.log(pattern[log['table']])
+			if(log['database'] === 'mmt-its') {
+				if(log['type'] === 'delete')
+					return [getAllRuangan(), log]
+				else return [getRuangan(log['table'], pattern[log['table']]['query'], log['data'], log), log]
+			}
+			else return [[null], log]
 		}
+		else return [[null], log]
 	})
 	.spread((data, log) => {
-		// console.log('dasdasdsadas'+data)
-		// console.log(data)
+		if(log['type'] === 'update'){
+
+			return [getOldRuangan(data, log), log]
+		}
+		else return [data, log]
+	})
+	.spread((data, log) => {
+		console.log(data)
+		console.log('kontol')
 		if(log['type'] === 'update'){
 			if(Object.keys(log['old']).includes('id_kelas')){
 				data.push(log['old']['id_kelas'])
-				console.log(data)
+				// console.log(data)
 			}
 		}
 		
 		function allDone(notAborted, arr) {
-			console.log(JSON.stringify(log))
+			// console.log(JSON.stringify(log))
 			if(notAborted !== false)
 				redisClient.lpushAsync('logs', JSON.stringify(log)).then((res) => {
-					console.log('log was saved to redis')
+					return redisClient.rpop('failed')
+				})
+				.then((res) => {
 					brpopQueue()
 				})
 			else{
+				console.log('a')
 				brpopQueue()
 			}
 		}
@@ -244,18 +374,21 @@ var brpopQueue = function() {
 					sendMessage(log, item).then((res) => {
 						console.log(JSON.stringify(res)+' sent to '+ item)
 						done();
-					}).catch((err) => {
-						console.log('asoy');
-						console.log(item)
-						
-						if(isFailed)
-							redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
-								done(false);
-							})
-						else 
-							redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
-								done(false);
-							})						
+					})
+					.catch((err) => {
+						// console.log('asoy');
+						console.log(err)
+						// done(false);
+						// brpopQueue()
+						done(false)
+						// if(isFailed)
+						// 	redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
+						// 		done(false);
+						// 	})
+						// else 
+						// 	redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
+						// 		done(false);
+						// 	})						
 					})
 				}, allDone)
 			}
@@ -264,20 +397,24 @@ var brpopQueue = function() {
 	})
 	.catch((err) => {
 		console.log(err)
-		if(isFailed)
-			redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
-				brpopQueue()
-			});
-		else 
-			redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
-				brpopQueue()
-			});
+		// console.log('error')
+		brpopQueue()
+		// if(log !== 'undefined'){
+		// 	if(isFailed)
+		// 		redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
+		// 			brpopQueue()
+		// 		});
+		// 	else 
+		// 		redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
+		// 			brpopQueue()
+		// 		});
+		// }
+		
 	});
 };
 function tes(){
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
-
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --include_dbs='mmt-its' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
+	var ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	// ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --producer='stdout' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 	  	console.log(`${data}`);
@@ -287,6 +424,7 @@ function tes(){
 	});
 	ls.on('close', (code) => {
 		console.log(`ea ${code}`);
+		// delete ls
 		check();
 	});
 	redisClient.on('error', () =>{
@@ -294,11 +432,26 @@ function tes(){
 		ls.kill()
 		// ls.on('close', (code) => {
 		// 	ls.kill();
-		// 	console.log(counter);
+			// console.log(counter);
 		// });
 	})
+ // 	callback = () => {
+	// 	ls.on('close', (code) => {
+	// 		console.log('kontol')
+
+	// 		ls.kill();
+	// 		console.log(counter);
+	// 		process.exit(0);
+	// 	});
+ // 	}
+	// exitHook(callback => {
+	// 	console.log('a')
+	//     callback()
+	// });
 	process.on('SIGINT', function () {
 		ls.on('close', (code) => {
+			// console.log('kontol')
+
 			ls.kill();
 			console.log(counter);
 			process.exit(0);
@@ -317,9 +470,10 @@ var initRedis = function(){
 		
 		// ls.on('close', (code) => {
 		// 	ls.kill();
-		// 	console.log(counter);
+			// console.log(counter);
 		// });
 	})
+	redisClientBlocking = redisClient.duplicate();
 	redisClient.on('ready', () => {
 		knexQuery = require('knex')({
 		  client: 'mysql2',
@@ -333,6 +487,10 @@ var initRedis = function(){
 		brpopQueue();
 		tes();
 	})
+	// redisClientBlocking.on('ready', () =>{
+	// 	brpopQueue();
+	// })
+
 }
 function check(){
 	function errorCallback(client){
@@ -389,6 +547,7 @@ function check(){
 		  	database: 'mmt-its'
 		  }
 		});
+
 		console.log('connected as id ' + mysqlClient.threadId);
 	});
 }
