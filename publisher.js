@@ -69,8 +69,6 @@ let buildQuery = (ptrn) => {
 					var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item2[1]]['referenced_column_name']).select().from(item);
 				}
 				else{
-					// console.log(item2)
-					// console.log(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name'])
 					var query = knex.distinct(item2[0]+'.'+ptrn[item]['ref'][index2][item]['referenced_column_name']).select().from(item);
 				} 
 				item2.reverse();
@@ -159,28 +157,28 @@ var brpopQueue = function() {
 	var sendMessage = (pesan, destination) => {
 		return new Promise((resolve, reject) => {
 			return amqp.connect('amqp://localhost').then(function(conn) {
-			  return conn.createChannel().then(function(ch) {
-			    var ex = destination;
-			    var ok = ch.assertExchange(ex, 'fanout', {durable: true})
-			    return ok.then(function() {
-			      ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)), {persistent: true});
-			      // console.log(pesan)
-			      // console.log(" [x] Sent '%s'", pesan);
-			      // ch.close();
-			      return [pesan, ch.close()]
-			    });
-			  }).spread((msg, ch) => {
-			  		return ch
-			  }
-			  ).finally(function() {
-				  	conn.close()
-				  	resolve(pesan)
-			  }).catch((err) => {
-			  	console.log('ga kekirik')
-			  	reject(err)
-			  });
+				return conn.createChannel().then(function(ch) {
+				var ex = destination;
+				var ok = ch.assertExchange(ex, 'fanout', {durable: true})
+				return ok.then(function() {
+					ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)), {persistent: true});
+					// console.log(pesan)
+					// console.log(" [x] Sent '%s'", pesan);
+					// ch.close();
+					return [pesan, ch.close()]
+				});
+				}).spread((msg, ch) => {
+					return ch
+				}
+				).finally(function() {
+					conn.close()
+					resolve(pesan)
+				}).catch((err) => {
+				console.log('ga kekirim')
+				reject(err)
+				});
 			}).catch(() => {
-				console.log('ga kekirik')
+				console.log('ga kekirim')
 				reject(console.warn)
 			});				
 		})
@@ -225,33 +223,22 @@ var brpopQueue = function() {
 					// console.log(res)
 
 					function checkPatternDone(notAborted, arr) {
-						// console.log(ruangan)
 						function allDone(notAborted, arr) {
-							// console.log(ruangan)
-							// resolve(data)
-							
 							selesai()
 						}
 						if (counter === 0){
-							// console.log(data)
 							selesai()
 						}
 						
 						else {
-							// if(res.length > 0){
 							forEach(pattern[res[0]['referenced_table_name']]['query'], function(item1, index1, length1) {
-								// console.log('a')
 								var query = item1.clone()
 								var done1 = this.async();
 								query.where(res[0]['referenced_table_name']+'.'+res[0]['referenced_column_name'], old[item])
 								console.log(query.toString())
-								// console.log(knexQuery.client)
 								query.client = knexQuery.client
 								query.then((row) => {
 									console.log(row.length)
-									// row.map((x) => {
-									// 	if (!data.includes(x['id_kelas']))data.push(x['id_kelas'])
-									// })
 									function selesaiPush(notAborted, arr){
 										done1()
 									}
@@ -264,15 +251,10 @@ var brpopQueue = function() {
 									}
 									else done1()
 									
-									// console.log(data)
-									
 								})
+								.catch((err) => reject(err))
 							}, allDone)
-							// }
-							// else selesai()
-							// else {
-							// 	resolve(data)
-							// }
+							
 						}				
 					}
 					// var count = pattern[table]['pattern'].length
@@ -299,13 +281,11 @@ var brpopQueue = function() {
 			
 		})
 	}
-	// var log;
-	// redisClientBlocking.brpopAsync('maxwell', 0)
 	redisClient.rpoplpushAsync('failed', 'failed').then((res) =>{
 		if (res === null){
 			// console.log('a')
-			console.log('failed is empty, waiting msg')
-			return redisClientBlocking.brpopAsync('maxwell', 0)
+			console.log('there is no failed job, waiting new message')
+			return redisClient.brpoplpushAsync('maxwell', 'failed', 0)
 		} 
 		else {
 			// console.log(res)
@@ -313,15 +293,7 @@ var brpopQueue = function() {
 		}
 	})
 	.then((res) => {
-		// console.log(res)
-		// process.exit(0)
-		if (Array.isArray(res)){
-			log = res[1]
-		}
-		else {
 		var log = res;
-			isFailed = true;
-		}
 		if(isJson(log)){
 			console.log(log)
 			log = JSON.parse(log)
@@ -337,32 +309,27 @@ var brpopQueue = function() {
 	})
 	.spread((data, log) => {
 		if(log['type'] === 'update'){
-
 			return [getOldRuangan(data, log), log]
 		}
 		else return [data, log]
 	})
 	.spread((data, log) => {
 		console.log(data)
-		console.log('kontol')
 		if(log['type'] === 'update'){
 			if(Object.keys(log['old']).includes('id_kelas')){
 				data.push(log['old']['id_kelas'])
-				// console.log(data)
 			}
 		}
-		
 		function allDone(notAborted, arr) {
-			// console.log(JSON.stringify(log))
 			if(notAborted !== false)
-				redisClient.lpushAsync('logs', JSON.stringify(log)).then((res) => {
+				redisClient.lpushAsync('logs', JSON.stringify(log))
+				.then((res) => {
 					return redisClient.rpop('failed')
 				})
 				.then((res) => {
 					brpopQueue()
 				})
 			else{
-				console.log('a')
 				brpopQueue()
 			}
 		}
@@ -376,19 +343,9 @@ var brpopQueue = function() {
 						done();
 					})
 					.catch((err) => {
-						// console.log('asoy');
 						console.log(err)
-						// done(false);
-						// brpopQueue()
 						done(false)
-						// if(isFailed)
-						// 	redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
-						// 		done(false);
-						// 	})
-						// else 
-						// 	redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
-						// 		done(false);
-						// 	})						
+						
 					})
 				}, allDone)
 			}
@@ -397,61 +354,28 @@ var brpopQueue = function() {
 	})
 	.catch((err) => {
 		console.log(err)
-		// console.log('error')
 		brpopQueue()
-		// if(log !== 'undefined'){
-		// 	if(isFailed)
-		// 		redisClient.rpushAsync('failed', JSON.stringify(log)).then((res) => {
-		// 			brpopQueue()
-		// 		});
-		// 	else 
-		// 		redisClient.lpushAsync('failed', JSON.stringify(log)).then((res) => {
-		// 			brpopQueue()
-		// 		});
-		// }
 		
 	});
 };
 function tes(){
-	// ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
-	var ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
-	// ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --producer='stdout' --output_binlog_position=true", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas,mesin_log  --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
-	  	console.log(`${data}`);
+		console.log(`${data}`);
 	});
 	ls.stderr.on('data', (data) => {
-	  	console.log(`${data}`);
+		console.log(`${data}`);
 	});
 	ls.on('close', (code) => {
 		console.log(`ea ${code}`);
-		// delete ls
 		check();
 	});
 	redisClient.on('error', () =>{
 		console.log('redis dc')
 		ls.kill()
-		// ls.on('close', (code) => {
-		// 	ls.kill();
-			// console.log(counter);
-		// });
 	})
- // 	callback = () => {
-	// 	ls.on('close', (code) => {
-	// 		console.log('kontol')
-
-	// 		ls.kill();
-	// 		console.log(counter);
-	// 		process.exit(0);
-	// 	});
- // 	}
-	// exitHook(callback => {
-	// 	console.log('a')
-	//     callback()
-	// });
 	process.on('SIGINT', function () {
 		ls.on('close', (code) => {
-			// console.log('kontol')
-
 			ls.kill();
 			console.log(counter);
 			process.exit(0);
@@ -461,19 +385,19 @@ function tes(){
 var initRedis = function(){
 	redisClient = redis.createClient({
 	  enable_offline_queue:true,
-	  function (options) {
+	  retry_strategy: function (options) {
 	        return 1000
 	    }
 	});
 	redisClient.on('error', () =>{
 		console.log('redis dc')
+		redisClient = null
+		// setTimeout(function() {
+		// 	initRedis()
+		// }, 0)
 		
-		// ls.on('close', (code) => {
-		// 	ls.kill();
-			// console.log(counter);
-		// });
 	})
-	redisClientBlocking = redisClient.duplicate();
+	// redisClientBlocking = redisClient.duplicate();
 	redisClient.on('ready', () => {
 		knexQuery = require('knex')({
 		  client: 'mysql2',
@@ -487,10 +411,6 @@ var initRedis = function(){
 		brpopQueue();
 		tes();
 	})
-	// redisClientBlocking.on('ready', () =>{
-	// 	brpopQueue();
-	// })
-
 }
 function check(){
 	function errorCallback(client){
