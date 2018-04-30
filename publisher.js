@@ -124,6 +124,7 @@ var brpopQueue = function() {
 					return queryResult
 				}).then((q) => {
 					console.log('aman')
+					console.log(q)
 					resolve(q)
 				}).catch((err) => {
 					reject(err)
@@ -223,6 +224,7 @@ var brpopQueue = function() {
 				})
 				.then((res) => {
 					// console.log(res)
+					console.log(res)
 					console.log('aman3')
 					function checkPatternDone(notAborted, arr) {
 						function allDone(notAborted, arr) {
