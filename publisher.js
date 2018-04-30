@@ -123,6 +123,7 @@ var brpopQueue = function() {
 					queryResult.client = knexQuery.client;
 					return queryResult
 				}).then((q) => {
+					console.log('aman')
 					resolve(q)
 				}).catch((err) => {
 					reject(err)
@@ -189,6 +190,7 @@ var brpopQueue = function() {
 			var ruangan = []
 			knexQuery.select('id_kelas').from('kelas')
 			.then((data) => {
+				console.log('aman2')
 				return Promise.each(data, (item, index, length) => {
 					ruangan.push(item['id_kelas'])
 				})
@@ -221,7 +223,7 @@ var brpopQueue = function() {
 				})
 				.then((res) => {
 					// console.log(res)
-
+					console.log('aman3')
 					function checkPatternDone(notAborted, arr) {
 						function allDone(notAborted, arr) {
 							selesai()
@@ -238,6 +240,7 @@ var brpopQueue = function() {
 								console.log(query.toString())
 								query.client = knexQuery.client
 								query.then((row) => {
+									console.log('aman4')
 									console.log(row.length)
 									function selesaiPush(notAborted, arr){
 										done1()
