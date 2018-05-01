@@ -1,3 +1,6 @@
 .DS_Store
 backup*.sql
 statement.sql
+hs_err_pid*.log
+hs_err_pid17591.log
+benchmark.txt

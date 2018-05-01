@@ -158,7 +158,8 @@ var brpopQueue = function() {
 	}
 	var sendMessage = (pesan, destination) => {
 		return new Promise((resolve, reject) => {
-			return amqp.connect('amqp://localhost').then(function(conn) {
+			return amqp.connect('amqp://127.0.0.1:5672').then(function(conn) {
+				console.log('a')
 				return conn.createChannel().then(function(ch) {
 				var ex = destination;
 				var ok = ch.assertExchange(ex, 'fanout', {durable: true})
@@ -179,7 +180,7 @@ var brpopQueue = function() {
 				console.log('ga kekirim')
 				reject(err)
 				});
-			}).catch(() => {
+			}).then(null, console.warn).catch(() => {
 				console.log('ga kekirim')
 				reject(console.warn)
 			});				
@@ -286,6 +287,30 @@ var brpopQueue = function() {
 			
 		})
 	}
+	var writeToFile = (waktu) => {
+		console.log(waktu)
+		return new Promise( (resolve, reject) => {
+			var check = require('fs'); 
+			check.stat(__dirname+'/benchmark.txt', function(err, stat) {
+				var fs = require('fs');
+				if (err === null) { 
+					fs.appendFile(__dirname+'/benchmark.txt', 'time : '+waktu+'\r\n', (err) => {
+						if (err) reject(err);
+						console.log(waktu)
+						resolve(waktu)
+					})
+				}
+				else if (err.code == 'ENOENT') {
+					fs.writeFile(__dirname+'/benchmark.txt', 'time : '+waktu+'\r\n', (err) => {
+						if (err) reject(err);
+						console.log(waktu)						
+						resolve(waktu)
+					});
+				}
+			})
+		});
+	}
+	var time;
 	redisClient.rpoplpushAsync('failed', 'failed').then((res) =>{
 		if (res === null){
 			// console.log('a')
@@ -298,6 +323,7 @@ var brpopQueue = function() {
 		}
 	})
 	.then((res) => {
+		time = new Date().getTime()/1000;
 		var log = res;
 		if(isJson(log)){
 			console.log(log)
@@ -325,25 +351,35 @@ var brpopQueue = function() {
 				data.push(log['old']['id_kelas'])
 			}
 		}
+		// console.log('anjay')
 		function allDone(notAborted, arr) {
-			if(notAborted !== false)
+			if(notAborted !== false){
+				var timeEnd = new Date().getTime()/1000
 				redisClient.lpushAsync('logs', JSON.stringify(log))
 				.then((res) => {
 					return redisClient.rpop('failed')
 				})
 				.then((res) => {
+					// console.log(time)
+					return writeToFile(timeEnd - time)
+				})
+				.then((res) => {
+					// console.log('waktu : ' + res)
 					brpopQueue()
 				})
+			}
 			else{
 				brpopQueue()
 			}
 		}
 		if(log['database'] !== 'mmt-its') allDone(null, null)
 		else {
+			console.log('ea')
 			if(data.length > 0){
 				forEach(data, function (item, index, arr){
 					var done = this.async()
 					sendMessage(log, item).then((res) => {
+						
 						console.log(JSON.stringify(res)+' sent to '+ item)
 						done();
 					})
@@ -364,7 +400,7 @@ var brpopQueue = function() {
 	});
 };
 function tes(){
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas,mesin_log  --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas,mesin_log  --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 		console.log(`${data}`);
 	});
@@ -409,7 +445,7 @@ var initRedis = function(){
 		  connection: {
 		    host: 'localhost',
 		  	user: 'root',
-		  	password: 'semarmesem',
+		  	password: 'liverpoolfc',
 		  	database: 'mmt-its'
 		  }
 		});
@@ -442,7 +478,7 @@ function check(){
 				  connection: {
 				    host: 'localhost',
 				  	user: 'root',
-				  	password: 'semarmesem',
+				  	password: 'liverpoolfc',
 				  	database: 'mmt-its'
 				  }
 				});
@@ -453,7 +489,7 @@ function check(){
 	mysqlClient = mysql.createConnection({
 	 	host: 'localhost',
 	  	user: 'root',
-	  	password: 'semarmesem'
+	  	password: 'liverpoolfc'
 	});
 	mysqlClient.connect(function(err) {
 	  	if (err) {
@@ -468,7 +504,7 @@ function check(){
 		  connection: {
 		    host: 'localhost',
 		  	user: 'root',
-		  	password: 'semarmesem',
+		  	password: 'liverpoolfc',
 		  	database: 'mmt-its'
 		  }
 		});

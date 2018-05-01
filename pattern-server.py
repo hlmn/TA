@@ -13,7 +13,7 @@ waktu = int(time.time())
 
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     passwd="semarmesem",  # your password
+                     passwd="liverpoolfc",  # your password
                      db="information_schema") 
 key_column_usage = Table('key_column_usage')
 manyToMany = {
