@@ -68,10 +68,10 @@ def main():
     query = 'select distinct jadwal.id_kelas from jadwal';
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
-    while True:
-        for row in cursor:
-            hasilPattern, id_jadwal = getQuery(row)
-            absen(hasilPattern['kartu'], id_jadwal)
+    # while True:
+    for row in cursor:
+        hasilPattern, id_jadwal = getQuery(row)
+        absen(hasilPattern['kartu'], id_jadwal)
         # print()
   
 if __name__== "__main__":

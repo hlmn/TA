@@ -468,6 +468,7 @@ var initRedis = function(){
 				rabbitMqConnection = ch
 			})
 			brpopQueue();
+
 			conn.on('close', function(err){
 				retryRmqConnection()
 			})
