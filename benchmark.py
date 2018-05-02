@@ -12,13 +12,8 @@ db = MySQLdb.connect(host="127.0.0.1",
                      passwd="liverpoolfc",  # your password
                      db="mmt-its")
 
-
-
-
-
 def getQuery(row):
     query = 'SELECT * FROM jadwal where jadwal.id_kelas = \'' + row['id_kelas'] + '\' ORDER BY RAND() LIMIT 1'
-    
     where = {}
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
@@ -39,11 +34,11 @@ def getQuery(row):
     jadwalBaru = MySQLQuery.into('jadwal').insert(where.values())
     for i in where.keys():
         jadwalBaru = jadwalBaru.columns(i)
-    # print(str( jadwalBaru))
+    print(str( jadwalBaru))
     cursor = db.cursor()
     cursor.execute(str(jadwalBaru))
     db.commit()
-    return listOfPattern, where['id_jadwal']
+    return listOfPattern, where
 
 def absen(queryKartu, id_jadwal):
     queryTotal = ' UNION '.join(queryKartu)
@@ -64,8 +59,16 @@ def absen(queryKartu, id_jadwal):
         cursor = db.cursor()
         cursor.execute(str(absen))
         db.commit()
+def ambilkelas(queryMahasiswa, whereJadwal):
+    # print(queryMahasiswa)
+    # print(whereJadwal)
+    queryTotal = ' UNION '.join(queryMahasiswa)
+    print('aaa : '+queryTotal)
+    getMahasiswaLain = 'select * from mahasiswa where `mahasiswa`.`nrp` not in (select e.nrp from (' + queryTotal + ') as e)'
+    print(getMahasiswaLain)
+
 def main():
-    query = 'select distinct jadwal.id_kelas from jadwal';
+    query = 'select distinct jadwal.id_kelas from jadwal'
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
     # while True:

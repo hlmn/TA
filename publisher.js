@@ -105,11 +105,6 @@ let buildQuery = (ptrn) => {
 	});
 }
 
-var promiseToFuckYou = function(data) {
-	return new Promise( (resolve, reject) => {
-		resolve(data)
-	});
-};
 // var isFailed = false;
 var brpopQueue = function() {
 	
