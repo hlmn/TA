@@ -18,6 +18,7 @@ var PythonShell = require('python-shell');
 // var server = require('http').Server(app);
 // var io = require('socket.io')(server);
 // server.listen(9999);
+let rabbitMqConnection;
 var redis = require("redis")
 let redisClient, redisClientBlocking;
 var bluebird = require("bluebird");
@@ -157,33 +158,26 @@ var brpopQueue = function() {
 		})
 	}
 	var sendMessage = (pesan, destination) => {
-		return new Promise((resolve, reject) => {
-			return amqp.connect('amqp://127.0.0.1:5672').then(function(conn) {
-				console.log('a')
-				return conn.createChannel().then(function(ch) {
-				var ex = destination;
-				var ok = ch.assertExchange(ex, 'fanout', {durable: true})
-				return ok.then(function() {
-					ch.publish(ex, '', Buffer.from(JSON.stringify(pesan)), {persistent: true});
-					// console.log(pesan)
-					// console.log(" [x] Sent '%s'", pesan);
-					// ch.close();
-					return [pesan, ch.close()]
-				});
-				}).spread((msg, ch) => {
-					return ch
-				}
-				).finally(function() {
-					conn.close()
-					resolve(pesan)
-				}).catch((err) => {
+		return new Promise((resolve, reject) => {		
+			var ex = destination;
+			var ok = rabbitMqConnection.assertExchange(ex, 'fanout', {durable: true})
+			return ok.then(function() {
+				rabbitMqConnection.publish(ex, '', Buffer.from(JSON.stringify(pesan)), {persistent: true});
+				// console.log(pesan)
+				// console.log(" [x] Sent '%s'", pesan);
+				// ch.close();
+				return pesan
+			}).then((pesan) => {
+				resolve(pesan)
+			}).catch((err) => {
 				console.log('ga kekirim')
 				reject(err)
-				});
-			}).then(null, console.warn).catch(() => {
-				console.log('ga kekirim')
-				reject(console.warn)
-			});				
+			});
+				
+			// }).then(null, console.warn).catch(() => {
+			// 	console.log('ga kekirim')
+			// 	reject(console.warn)
+			// });				
 		})
 	}
 
@@ -360,11 +354,11 @@ var brpopQueue = function() {
 					return redisClient.rpop('failed')
 				})
 				.then((res) => {
-					// console.log(time)
+					
 					return writeToFile(timeEnd - time)
 				})
 				.then((res) => {
-					// console.log('waktu : ' + res)
+					console.log('\n')
 					brpopQueue()
 				})
 			}
@@ -449,7 +443,38 @@ var initRedis = function(){
 		  	database: 'mmt-its'
 		  }
 		});
-		brpopQueue();
+		retryRmqConnection = () =>{
+			if (rabbitMqConnection!==null)console.log('retry connection to rabbitMq')
+			rabbitMq = amqp.connect('amqp://127.0.0.1:5672').then((conn) => {
+			  	conn.createChannel().then((ch) => {
+					rabbitMqConnection = ch
+				})
+				console.log('readyrabbit')
+				conn.on('close', function(err){
+				setTimeout( function() {
+						retryRmqConnection()
+					}, 0 );
+				})
+			}).catch( (err) => {
+			  rabbitMqConnection = null
+			  setTimeout( function() {
+					  retryRmqConnection()
+				  }, 0 );
+			})
+		}
+		var rabbitMq = amqp.connect('amqp://127.0.0.1:5672').then((conn) => {
+			
+			conn.createChannel().then((ch) => {
+				rabbitMqConnection = ch
+			})
+			brpopQueue();
+			conn.on('close', function(err){
+				retryRmqConnection()
+			})
+		}).catch((err)=>{
+			console.log(err)
+			retryRmqConnection()
+		})
 		tes();
 	})
 }
