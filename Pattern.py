@@ -468,7 +468,7 @@ class Pattern:
         # exit()
         return result, joinResult
 
-    def raw(text):
+    def raw(self, text):
         """Returns a raw string representation of text"""
         escape_dict={
             '\'':r'\'',
@@ -513,7 +513,7 @@ class Pattern:
                                 data.append(None)
                             else:
                                 temp = str(item)
-                                data.append(raw(temp))
+                                data.append(self.raw(temp))
                     tables.append(key)
                     query = MySQLQuery.into(key).insert(data)
                     print(str(query))

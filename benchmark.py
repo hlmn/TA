@@ -6,7 +6,8 @@ from pprint import pprint
 import uuid
 from pypika import MySQLQuery, Table, Field, Order, functions as fn, JoinType
 import time
-
+import json
+import socket
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
                      passwd="liverpoolfc",  # your password
@@ -34,7 +35,7 @@ def getQuery(row):
     jadwalBaru = MySQLQuery.into('jadwal').insert(where.values())
     for i in where.keys():
         jadwalBaru = jadwalBaru.columns(i)
-    print(str( jadwalBaru))
+    print(str(jadwalBaru))
     cursor = db.cursor()
     cursor.execute(str(jadwalBaru))
     db.commit()
@@ -59,23 +60,40 @@ def absen(queryKartu, id_jadwal):
         cursor = db.cursor()
         cursor.execute(str(absen))
         db.commit()
+        exit()
 def ambilkelas(queryMahasiswa, whereJadwal):
-    # print(queryMahasiswa)
-    # print(whereJadwal)
     queryTotal = ' UNION '.join(queryMahasiswa)
-    print('aaa : '+queryTotal)
-    getMahasiswaLain = 'select * from mahasiswa where `mahasiswa`.`nrp` not in (select e.nrp from (' + queryTotal + ') as e)'
+    queryTotal = queryTotal.replace(socket.gethostname(), whereJadwal['id_kelas'])
+    
+    getMahasiswaLain = 'select * from mahasiswa where `mahasiswa`.`nrp` not in (select e.nrp from (' + queryTotal + ') as e)  ORDER BY RAND() LIMIT 3'
     print(getMahasiswaLain)
+    cursor = db.cursor(cursors.DictCursor)
+    cursor.execute(str(getMahasiswaLain))
+    for row in cursor:
+        query = MySQLQuery.into('ambilkelas').insert(whereJadwal['id_kelas_matkul'], row['nrp'])
+        print(str(query))
+        cursor = db.cursor()
+        cursor.execute(str(query))
+        db.commit()
+
+
 
 def main():
     query = 'select distinct jadwal.id_kelas from jadwal'
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
     # while True:
+    # log = '{"database":"mmt-its","table":"absen","type":"insert","ts":1525257612,"xid":1927081,"commit":true,"position":"master.000006:43124064","data":{"id_absen":"d750c546-dee6-4228-8a91-faef298dfe5b","id_kartu":null,"id_jadwal":"da2a6bd1-b4d0-455d-8a32-362bb41f07b3","waktu_absen":"2018-05-02 17:40:12","nrp":"9211750014008"}}'
+    # log = json.loads(log)
+    # result, ref = ptrn.getTablePattern(log['table'])
+    # listOfPattern = ptrn.buildQuery(result, ref, log['data'], log['table'])
+    # pprint(listOfPattern)
     for row in cursor:
-        hasilPattern, id_jadwal = getQuery(row)
-        absen(hasilPattern['kartu'], id_jadwal)
-        # print()
+        hasilPattern, where = getQuery(row)
+        # print(hasilPattern['absen'])
+        absen(hasilPattern['kartu'], where['id_jadwal'])
+        # # print()
+        ambilkelas(ptrn.dictOfPattern['mahasiswa']['query'], where)
   
 if __name__== "__main__":
     ptrn = Pattern()
