@@ -138,15 +138,15 @@ manyToMany = {
            'kelasmatkul'
         ] 
     },
-    # "absen" : {
-    #     "kanan" : [
-    #         'mahasiswa',
-    #         'kartu'
-    #     ],
-    #     "kiri": [
-    #        'jadwal'
-    #     ] 
-    # }
+    "absen" : {
+        "kanan" : [
+            'mahasiswa',
+            'kartu'
+        ],
+        "kiri": [
+           'jadwal'
+        ] 
+    }
 
 }
 
@@ -379,8 +379,8 @@ class Pattern:
         refCount = 0
         length = 0
         for value in cur:
-            if value['constraint_name'] == 'PRIMARY':
-                return False
+            # if value['constraint_name'] == 'PRIMARY':
+            #     return False
             if value['referenced_table_name'] is not None:
                 length += 1
                 if value['table_name'] == tabel:
@@ -573,7 +573,7 @@ class Pattern:
                 for j, row in reversed(list(enumerate(value))):
                     if j == 0:
                         if len(value)>1 :
-                            q = q.select(Table(value[-1]).star)
+                            q = q.select(Table(value[-1]).star).distinct()
                             for element in where.keys():
                                 if where[element] is None:
                                     q = q.where(getattr(tableTarget, element).isnull())
@@ -582,7 +582,7 @@ class Pattern:
                                         getattr(tableTarget, element) == where[element]
                                     )
                         else: 
-                            q = MySQLQuery.from_(tableTarget).select(getattr(tableTarget, 'star'))
+                            q = MySQLQuery.from_(tableTarget).select(getattr(tableTarget, 'star')).distinct()
                             for element in where.keys():
                                 # if element == 'jam_mulai' or element == 'jam_selesai' or element == 'tanggal':
                                 #     continue
@@ -608,7 +608,7 @@ class Pattern:
                                 tabel1
                             ).on(
                                 getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
-                            ).select(tabel.star)
+                            ).select(tabel.star).distinct()
                         
                         # print(str(q))
 
@@ -883,7 +883,7 @@ class Pattern:
                         if len(value)>1 :
                             q = q.select(Table(value[-1]).star).where(
                                 getattr(Table(value[0]), key_tabel_master) == kelas
-                        )
+                        ).distinct()
                         if value:
                             del self.pattern[i][-1]
                         if not self.pattern[i]:
@@ -897,7 +897,7 @@ class Pattern:
                                 tabel1
                             ).on(
                                 getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
-                            ).select(tabel.star)
+                            ).select(tabel.star).distinct()
                         
                         # print(str(q))
 
@@ -946,7 +946,7 @@ class Pattern:
                         if len(value)>1 :
                             q = q.select(Table(value[-1]).star).where(
                                 getattr(Table(value[0]), key_tabel_master) == kelas
-                            )
+                            ).distinct()
                             # q = q.select(Table(value[-1]).star).where(
                             #     getattr(Table(value[0]), key_tabel_master).isnull()
                             # )
@@ -963,7 +963,7 @@ class Pattern:
                                 tabel1
                             ).on(
                                 getattr(Table(insertJoin[i][row]['table_name']), insertJoin[i][row]['column_name']) == getattr(Table(insertJoin[i][row]['referenced_table_name']), insertJoin[i][row]['referenced_column_name'])
-                            ).select(tabel.star)
+                            ).select(tabel.star).distinct()
                         # joinnn[row] = copy.deepcopy(insertJoin[i][row])
                         # print(str(q))
 

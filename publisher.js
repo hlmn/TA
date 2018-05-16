@@ -127,6 +127,54 @@ var brpopQueue = function() {
 				})
 		})
 	}
+
+	var buildInsertToSlave = (log) => {
+		return new Promise((resolve, reject) => {
+			knexQuery(log['table']).insert(log['data']).then((res) => {
+				resolve(JSON.stringify(log))
+			}).catch((err) => {
+				reject(err)
+			});
+		})
+	}
+
+	var buildUpdateToSlave = (log) => {
+		return new Promise((resolve, reject) => {
+			var query = knexQuery(log['table'])
+			return Promise.each(Object.keys(log['data']), (item1, index1, length1) => {
+				var data;
+				if(Object.keys(log['old']).includes(item1)) 
+					data = log['old'][item1]
+				else data = log['data'][item1]
+				if (data === null) query.whereNull(item1)
+				else query.where(item1, data)
+			}).then(() => {
+				return query.update(log['data'])
+			}).then((res) => {
+				resolve(JSON.stringify(log))
+			}).catch((err) => {
+				reject(err)
+			})
+		
+		})
+	}
+	var buildDeleteToSlave = (log) => {
+		return new Promise((resolve, reject) => {
+			var query = knexQuery(log['table'])
+			return Promise.each(Object.keys(log['data']), (item1, index1, length1) => {
+				var data = log['data'][item1]
+				if (data === null) query.whereNull(item1)
+				else query.where(item1, data)
+			}).then(() => {
+				return query.delete()
+			}).then((res) => {
+				resolve(JSON.stringify(log))
+			}).catch((err) => {
+				reject(err)
+			})
+		})
+	}
+
 	var getRuangan = function(table, query, data) {
 		// console.log(data)
 		return new Promise((resolve, reject) => {
@@ -163,6 +211,10 @@ var brpopQueue = function() {
 				// ch.close();
 				return pesan
 			}).then((pesan) => {
+				var timeEnd = new Date().getTime()/1000
+				return writeToFile(JSON.stringify(pesan)+'|'+(timeEnd - time)+'|'+JSON.stringify([destination]))
+				
+			}).then(() => {
 				resolve(pesan)
 			}).catch((err) => {
 				console.log('ga kekirim')
@@ -210,7 +262,7 @@ var brpopQueue = function() {
 				knexQuery.column('referenced_table_name', 'referenced_column_name').select().from('information_schema.key_column_usage').where({
 					table_name : table,
 					column_name : item,
-					table_schema : 'mmt-its'
+					table_schema : 'mmtslave'
 				})
 				.then((res) => {
 					// console.log(res)
@@ -283,14 +335,14 @@ var brpopQueue = function() {
 			check.stat(__dirname+'/benchmark.txt', function(err, stat) {
 				var fs = require('fs');
 				if (err === null) { 
-					fs.appendFile(__dirname+'/benchmark.txt', 'time : '+waktu+'\r\n', (err) => {
+					fs.appendFile(__dirname+'/benchmark.txt', waktu+'\r\n', (err) => {
 						if (err) reject(err);
 						console.log(waktu)
 						resolve(waktu)
 					})
 				}
 				else if (err.code == 'ENOENT') {
-					fs.writeFile(__dirname+'/benchmark.txt', 'time : '+waktu+'\r\n', (err) => {
+					fs.writeFile(__dirname+'/benchmark.txt', waktu+'\r\n', (err) => {
 						if (err) reject(err);
 						console.log(waktu)						
 						resolve(waktu)
@@ -312,6 +364,16 @@ var brpopQueue = function() {
 		}
 	})
 	.then((res) => {
+		var log = res;
+		if(isJson(log)){
+			log = JSON.parse(log)
+			if (log['type'] === 'insert') return buildInsertToSlave(log)
+			else if (log['type'] === 'update') return buildUpdateToSlave(log);
+			else if (log['type'] === 'delete') return buildDeleteToSlave(log)
+		}
+		else return res
+	})
+	.then((res) => {
 		time = new Date().getTime()/1000;
 		var log = res;
 		if(isJson(log)){
@@ -329,29 +391,45 @@ var brpopQueue = function() {
 	})
 	.spread((data, log) => {
 		if(log['type'] === 'update'){
+			if(Object.keys(log['old']).includes('id_kelas')){
+				data.push(log['old']['id_kelas'])
+			}
 			return [getOldRuangan(data, log), log]
 		}
 		else return [data, log]
 	})
 	.spread((data, log) => {
+		// if(data.length === 0){
+		// 	if(log['type'] ==bench= 'update'){
+		// 		log['type'] = 'updateWithoutCheck'
+		// 		return [getAllRuangan(), log]
+		// 	}
+		// 	else return [data, log]
+		// }
+		// else return [data, log]
+		return [data, log]
+	})
+	.spread((data, log) => {
 		console.log(data)
-		if(log['type'] === 'update'){
-			if(Object.keys(log['old']).includes('id_kelas')){
-				data.push(log['old']['id_kelas'])
-			}
-		}
+		// if(log['type'] === 'update'){
+			
+		// }
+
+		
 		// console.log('anjay')
 		function allDone(notAborted, arr) {
 			if(notAborted !== false){
-				var timeEnd = new Date().getTime()/1000
+				// var timeEnd = new Date().getTime()/1000
 				redisClient.lpushAsync('logs', JSON.stringify(log))
 				.then((res) => {
 					return redisClient.rpop('failed')
 				})
-				.then((res) => {
-					
-					return writeToFile(timeEnd - time)
-				})
+				// .then((res) => {
+				// 	// if(data.length === 0) return writeToFile(JSON.stringify(log))
+				// 	// else writeToFile(timeEnd - time)
+				// 	// log['tujuan'] = data
+ 				// 	return writeToFile(JSON.stringify(log)+'|'+(timeEnd - time)+'|'+JSON.stringify(data))
+				// })
 				.then((res) => {
 					console.log('\n')
 					brpopQueue()
@@ -435,7 +513,7 @@ var initRedis = function(){
 		    host: 'localhost',
 		  	user: 'root',
 		  	password: 'liverpoolfc',
-		  	database: 'mmt-its'
+		  	database: 'mmtslave'
 		  }
 		});
 		retryRmqConnection = () =>{
@@ -500,7 +578,7 @@ function check(){
 				    host: 'localhost',
 				  	user: 'root',
 				  	password: 'liverpoolfc',
-				  	database: 'mmt-its'
+				  	database: 'mmtslave'
 				  }
 				});
 				console.log('connected as id ' + mysqlClient.threadId);
@@ -526,7 +604,7 @@ function check(){
 		    host: 'localhost',
 		  	user: 'root',
 		  	password: 'liverpoolfc',
-		  	database: 'mmt-its'
+		  	database: 'mmtslave'
 		  }
 		});
 

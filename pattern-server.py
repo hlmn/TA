@@ -174,8 +174,8 @@ def isManyToMany( tabel):
     refCount = 0
     length = 0
     for value in cur:
-        if value['constraint_name'] == 'PRIMARY':
-            return False
+        # if value['constraint_name'] == 'PRIMARY':
+        #     return False
         if value['referenced_table_name'] is not None:
             length += 1
             if value['table_name'] == tabel:
