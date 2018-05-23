@@ -7,3 +7,5 @@ benchmark.txt
 *.pyc
 
 benchmark/
+
+checkData\.xlsx

@@ -154,7 +154,7 @@ def main():
         # os.system("python replicateForTesting.py")
         db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     passwd="liverpoolfc",  # your password
+                     passwd="semarmesem",  # your password
                      db="mmt-its")
         query = 'select distinct jadwal.id_kelas from jadwal ORDER BY jadwal.id_kelas ASC'
         cursor = db.cursor(cursors.DictCursor)
@@ -192,12 +192,12 @@ if __name__== "__main__":
     # cursor.execute('select * from jadwal')
     # print(cursor.rowcount)
     # os.system("redis-cli flushall")
-    # os.system("mysql -u root -pliverpoolfc -e 'DROP DATABASE IF EXISTS `mmt-its`;'")
-    # os.system("mysql -u root -pliverpoolfc -e 'CREATE DATABASE `mmt-its`;'")
-    # os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
+    # os.system("mysql -u root -psemarmesem -e 'DROP DATABASE IF EXISTS `mmt-its`;'")
+    # os.system("mysql -u root -psemarmesem -e 'CREATE DATABASE `mmt-its`;'")
+    # os.system('mysql -u root -psemarmesem -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
     # # db.close()
-    # os.system('mysql -u root -pliverpoolfc mmt-its < baru.sql')
-    # os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=1;"')
+    # os.system('mysql -u root -psemarmesem mmt-its < baru.sql')
+    # os.system('mysql -u root -psemarmesem -e "SET GLOBAL FOREIGN_KEY_CHECKS=1;"')
     # os.system('python replicateInServer.py')
     # os.system("redis-cli flushall")
     # # exit()

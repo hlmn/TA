@@ -18,7 +18,7 @@ import json
 # print(dir_path+"/ip.txt")
 # ipPusat = f.read()
 # ipPusat = ipPusat.rstrip()
-ipPusat = '127.0.0.1'
+ipPusat = '192.168.0.50'
 # os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
 # os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
 # os.system('mysql -u root -psemarmesem -e "DROP DATABASE IF EXISTS mmt-its;"')
@@ -100,7 +100,7 @@ class DB:
   # def rowcount(self):
   #   return self.conn.rowcount
 # os.system('mysql -u root -psemarmesem mmt-its < backup'+str(waktu)+'.sql')
-db = MySQLdb.connect(host="127.0.0.1",
+db = MySQLdb.connect(host="192.168.0.50",
                          user="root",         # your username
                          passwd="semarmesem",  # your password
                          db="information_schema") 
@@ -108,7 +108,7 @@ db = MySQLdb.connect(host="127.0.0.1",
 #                      user="root",         # your username
 #                      passwd="semarmesem",  # your password
 #                      db="mmt-its")
-# dbInsert = MySQLdb.connect(host="127.0.0.1",
+# dbInsert = MySQLdb.connect(host="192.168.0.50",
 #                      user="root",         # your username
 #                      # passwd="semarmesem",  # your password
 #                      db="mmt-its")
@@ -160,7 +160,7 @@ class Pattern:
     def __init__(self):
 
         self.dbInsert = DB(
-                    '127.0.0.1',
+                    '192.168.0.50',
                     'root',
                     'semarmesem',
                     'mmt-its'

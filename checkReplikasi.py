@@ -14,7 +14,7 @@ import requests
 import time
 import datetime
 
-db = MySQLdb.connect(host="127.0.0.1",
+db = MySQLdb.connect(host="192.168.0.50",
                      user="root",         # your username
                      passwd="semarmesem",  # your password
                      db="mmt-its")
@@ -74,7 +74,7 @@ tables = "SELECT table_name FROM information_schema.tables where table_schema='m
 cursor = db.cursor(cursors.DictCursor)
 cursor.execute(tables)
 
-r = requests.get('http://localhost:9999/get/ruangan')
+r = requests.get('http://192.168.0.50:9999/get/ruangan')
 # print(r.text)
 result = json.loads(r.text)
 # pprint(result)
