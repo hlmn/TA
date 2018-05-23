@@ -15,7 +15,7 @@ import requests
 import sys
 import re
 
-r = requests.get('http://localhost:9999/get/ruangan')
+r = requests.get('http://192.168.0.50:9999/get/ruangan')
 # print(r.text)
 result = json.loads(r.text)
 kelas = {}

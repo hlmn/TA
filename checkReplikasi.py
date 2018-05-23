@@ -14,9 +14,9 @@ import requests
 import time
 import datetime
 
-db = MySQLdb.connect(host="192.168.0.50",
+db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     passwd="semarmesem",  # your password
+                     passwd="liverpoolfc",  # your password
                      db="mmt-its")
 # mesin = MySQLdb.connect(host="192.168.0.33",
 #                      user="root",         # your username
@@ -74,7 +74,7 @@ tables = "SELECT table_name FROM information_schema.tables where table_schema='m
 cursor = db.cursor(cursors.DictCursor)
 cursor.execute(tables)
 
-r = requests.get('http://192.168.0.50:9999/get/ruangan')
+r = requests.get('http://127.0.0.1:9999/get/ruangan')
 # print(r.text)
 result = json.loads(r.text)
 # pprint(result)
@@ -89,7 +89,7 @@ for id_kelas in result['ruangan']:
             if row['table_name'] in blacklist:
                 continue
             ts = time.time()
-            dateTimeString = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M%:%S")
+            dateTimeString = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
             print(dateTimeString+' -> '+row['table_name'])
             # print()
             query = copy.deepcopy(ptrn.dictOfPattern[row['table_name']]['query'])
