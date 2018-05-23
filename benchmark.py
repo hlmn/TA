@@ -114,7 +114,7 @@ def updateJadwal(whereJadwal):
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
     for row in cursor:
-        update = "UPDATE JADWAL SET id_kelas_matkul = '"+row['id_kelas_matkul']+"' WHERE id_jadwal = '"+whereJadwal['id_jadwal']+"'"
+        update = "UPDATE jadwal SET id_kelas_matkul = '"+row['id_kelas_matkul']+"' WHERE id_jadwal = '"+whereJadwal['id_jadwal']+"'"
         print(update)
         counter += 1
         cursor = db.cursor()
@@ -152,7 +152,7 @@ def main():
         limit = 0
         counter = 0
         # os.system("python replicateForTesting.py")
-        db = MySQLdb.connect(host="127.0.0.1",
+        db = MySQLdb.connect(host="192.168.0.50",
                      user="root",         # your username
                      passwd="semarmesem",  # your password
                      db="mmt-its")
