@@ -462,7 +462,7 @@ var brpopQueue = function() {
 	})
 	.catch((err) => {
 		console.log(err)
-		process.exit(0)
+		// process.exit(0)
 		brpopQueue()
 		
 	});
