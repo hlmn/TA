@@ -21,9 +21,9 @@ import json
 ipPusat = '127.0.0.1'
 # os.system("wget -O backup"+str(waktu)+".sql http://localhost/sisteminformasi/public/backup/get/structure")
 # os.system("wget -O backup"+str(waktu)+".sql http://localhost:8000/backup/get/structure")
-# os.system('mysql -u root -pliverpoolfc -e "DROP DATABASE IF EXISTS mmt-its;"')
-# os.system('mysql -u root -pliverpoolfc -e "CREATE DATABASE mmt-its;"')
-# os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
+# os.system('mysql -u root -psemarmesem -e "DROP DATABASE IF EXISTS mmt-its;"')
+# os.system('mysql -u root -psemarmesem -e "CREATE DATABASE mmt-its;"')
+# os.system('mysql -u root -psemarmesem -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
 
 
 # os.system('cat <(echo "SET FOREIGN_KEY_CHECKS=0;") imports.sql | mysql -u root')
@@ -99,18 +99,18 @@ class DB:
     self.conn.commit()
   # def rowcount(self):
   #   return self.conn.rowcount
-# os.system('mysql -u root -pliverpoolfc mmt-its < backup'+str(waktu)+'.sql')
+# os.system('mysql -u root -psemarmesem mmt-its < backup'+str(waktu)+'.sql')
 db = MySQLdb.connect(host="127.0.0.1",
                          user="root",         # your username
-                         passwd="liverpoolfc",  # your password
+                         passwd="semarmesem",  # your password
                          db="information_schema") 
 # dbSelect = MySQLdb.connect(host="192.168.0.13",
 #                      user="root",         # your username
-#                      passwd="liverpoolfc",  # your password
+#                      passwd="semarmesem",  # your password
 #                      db="mmt-its")
 # dbInsert = MySQLdb.connect(host="127.0.0.1",
 #                      user="root",         # your username
-#                      # passwd="liverpoolfc",  # your password
+#                      # passwd="semarmesem",  # your password
 #                      db="mmt-its")
 key_column_usage = Table('key_column_usage')
 # print key_column_usage.table_name
@@ -162,14 +162,14 @@ class Pattern:
         self.dbInsert = DB(
                     '127.0.0.1',
                     'root',
-                    'liverpoolfc',
+                    'semarmesem',
                     'mmt-its'
                 )
         self.dbSelect = DB(
                     ipPusat,
                     'root',
-                    'liverpoolfc',
-                    'liverpoolfc'
+                    'semarmesem',
+                    'semarmesem'
                     'mmt-its'
                 )
 

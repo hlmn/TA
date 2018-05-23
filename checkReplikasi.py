@@ -16,7 +16,7 @@ import datetime
 
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     passwd="liverpoolfc",  # your password
+                     passwd="semarmesem",  # your password
                      db="mmt-its")
 mesin = MySQLdb.connect(host="192.168.0.33",
                      user="root",         # your username

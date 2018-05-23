@@ -6,7 +6,7 @@ import requests
 import json
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
-                     passwd="liverpoolfc")
+                     passwd="semarmesem")
 
 waktu = int(time.time())
 cursor = db.cursor()
@@ -18,21 +18,11 @@ cursor = db.cursor()
 cursor.execute('unlock tables')
 db.commit()
 
-os.system('mysql -u root -pliverpoolfc -e "DROP DATABASE IF EXISTS mmtslave;"')
-os.system('mysql -u root -pliverpoolfc -e "CREATE DATABASE mmtslave;"')
-os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
+os.system('mysql -u root -psemarmesem -e "DROP DATABASE IF EXISTS mmtslave;"')
+os.system('mysql -u root -psemarmesem -e "CREATE DATABASE mmtslave;"')
+os.system('mysql -u root -psemarmesem -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
 # db.close()
-os.system('mysql -u root -pliverpoolfc mmtslave < backup'+str(waktu)+'.sql')
-os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=1;"')
+os.system('mysql -u root -psemarmesem mmtslave < backup'+str(waktu)+'.sql')
+os.system('mysql -u root -psemarmesem -e "SET GLOBAL FOREIGN_KEY_CHECKS=1;"')
 
 
-r = requests.get('http://localhost:9999/get/ruangan')
-result = json.loads(r.text)
-
-for ruangan in result['ruangan']:
-    for socketId in result['ruangan'][ruangan]:
-        ip = result['ip'][socketId]
-        address = "http://"+ip+":8888/start/replikasi/"
-        print('replicating '+ruangan+'...')
-        test = requests.get(address)
-        print(test.text)

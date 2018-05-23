@@ -467,7 +467,7 @@ var brpopQueue = function() {
 	});
 };
 function tes(){
-	ls = spawn("maxwell/bin/maxwell --user='root' --password='liverpoolfc' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas,mesin_log  --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
+	ls = spawn("maxwell/bin/maxwell --user='root' --password='semarmesem' --host='127.0.0.1' --include_dbs='mmt-its' --exclude_tables=kelas,mesin_log  --producer='redis' --output_binlog_position=true --config='maxwell/bin/config.properties'", [], { shell: true, encoding: 'utf-8' });
 	ls.stdout.on('data', (data) => {
 		console.log(`${data}`);
 	});
@@ -512,7 +512,7 @@ var initRedis = function(){
 		  connection: {
 		    host: 'localhost',
 		  	user: 'root',
-		  	password: 'liverpoolfc',
+		  	password: 'semarmesem',
 		  	database: 'mmtslave'
 		  }
 		});
@@ -590,7 +590,7 @@ function check(){
 				  connection: {
 				    host: 'localhost',
 				  	user: 'root',
-				  	password: 'liverpoolfc',
+				  	password: 'semarmesem',
 				  	database: 'mmtslave'
 				  }
 				});
@@ -601,7 +601,7 @@ function check(){
 	mysqlClient = mysql.createConnection({
 	 	host: 'localhost',
 	  	user: 'root',
-	  	password: 'liverpoolfc'
+	  	password: 'semarmesem'
 	});
 	mysqlClient.connect(function(err) {
 	  	if (err) {
@@ -616,7 +616,7 @@ function check(){
 		  connection: {
 		    host: 'localhost',
 		  	user: 'root',
-		  	password: 'liverpoolfc',
+		  	password: 'semarmesem',
 		  	database: 'mmtslave'
 		  }
 		});
