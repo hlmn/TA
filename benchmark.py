@@ -163,6 +163,7 @@ def main():
             for row in cursor:
                 print(row['id_kelas'])
                 hasilPattern, where = getQuery(row)
+                exit()
                 # time.sleep(0.5)
                 # print(hasilPattern['absen'])
                 

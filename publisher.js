@@ -462,7 +462,7 @@ var brpopQueue = function() {
 	})
 	.catch((err) => {
 		console.log(err)
-		// brpopQueue()
+		brpopQueue()
 		
 	});
 };
