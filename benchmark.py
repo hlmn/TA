@@ -8,9 +8,10 @@ from pypika import MySQLQuery, Table, Field, Order, functions as fn, JoinType
 import time
 import json
 import os
+import requests
 import socket
 counter = 0   
-batas = [30]
+batas = [10]
 db = None
 def getQuery(row):
     global db
@@ -147,12 +148,14 @@ def main():
     # result, ref = ptrn.getTablePattern(log['table'])
     # listOfPattern = ptrn.buildQuery(result, ref, log['data'], log['table'])
     # pprint(listOfPattern)
-    
+    r = requests.get('http://localhost:9999/get/ruangan')
+# print(r.text)
+    result = json.loads(r.text)
     for i in batas:
         limit = 0
         counter = 0
         # os.system("python replicateForTesting.py")
-        db = MySQLdb.connect(host="192.168.0.50",
+        db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
                      passwd="semarmesem",  # your password
                      db="mmt-its")
@@ -161,9 +164,12 @@ def main():
         cursor.execute(query)
         while limit < i:
             for row in cursor:
+                
+                if row['id_kelas'] not in result['ruangan']:
+                    continue
                 print(row['id_kelas'])
                 hasilPattern, where = getQuery(row)
-                exit()
+                # exit()
                 # time.sleep(0.5)
                 # print(hasilPattern['absen'])
                 
@@ -183,7 +189,9 @@ def main():
                 # exit()
             limit += 1
         # time.sleep(60)
-        os.system("python checkpubsub.py "+str(i)+" "+str(counter)) 
+        print(i)
+        print(counter)
+        # os.system("python checkpubsub.py "+str(i)+" "+str(counter)) 
         # exit()
 
     
