@@ -10,9 +10,10 @@ import json
 import os
 import socket
 counter = 0   
-
+batas = [30]
+db = None
 def getQuery(row):
-    
+    global db
     query = 'SELECT * FROM jadwal where jadwal.id_kelas = \'' + row['id_kelas'] + '\' ORDER BY jadwal.id_jadwal ASC LIMIT 1'
     where = {}
     cursor = db.cursor(cursors.DictCursor)
@@ -44,7 +45,7 @@ def getQuery(row):
 
 def absen(queryKartu, id_jadwal):
     global counter
-    
+    global db
     queryTotal = ' UNION '.join(queryKartu)
     # print(id_jadwal)
     # print(queryTotal)
@@ -67,7 +68,7 @@ def absen(queryKartu, id_jadwal):
         # exit()
 def ambilkelas(queryMahasiswa, whereJadwal):
     global counter
-    
+    global db
     queryTotal = ' UNION '.join(queryMahasiswa)
     queryTotal = queryTotal.replace(socket.gethostname(), whereJadwal['id_kelas'])
     
@@ -84,7 +85,7 @@ def ambilkelas(queryMahasiswa, whereJadwal):
         db.commit()
 def updateKelasMatkul(queryKelasMatkul, whereJadwal):
     global counter
-    
+    global db
     queryTotal = ' UNION '.join(queryKelasMatkul)
     queryTotal = queryTotal.replace(socket.gethostname(), whereJadwal['id_kelas'])
 
@@ -108,7 +109,7 @@ def updateKelasMatkul(queryKelasMatkul, whereJadwal):
         
 def updateJadwal(whereJadwal):
     global counter
-    
+    global db
     query = "select kelasmatkul.id_kelas_matkul from kelasmatkul where id_kelas_matkul not in (select distinct jadwal.id_kelas_matkul from jadwal where jadwal.id_kelas = '"+whereJadwal['id_kelas']+"') ORDER BY kelasmatkul.id_kelas_matkul ASC LIMIT 1"
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
@@ -122,7 +123,7 @@ def updateJadwal(whereJadwal):
 
 def deleteJadwal(whereJadwal):
     global counter
-    
+    global db
     query = "select jadwal.id_jadwal from jadwal where jadwal.id_kelas ='"+whereJadwal['id_kelas']+"' and id_kelas_matkul != '"+whereJadwal['id_kelas_matkul']+"' ORDER BY jadwal.id_jadwal ASC LIMIT 1"
     cursor = db.cursor(cursors.DictCursor)
     cursor.execute(query)
@@ -136,11 +137,9 @@ def deleteJadwal(whereJadwal):
 
 
 def main():
-
-
-    query = 'select distinct jadwal.id_kelas from jadwal ORDER BY jadwal.id_kelas ASC'
-    cursor = db.cursor(cursors.DictCursor)
-    cursor.execute(query)
+    global db
+    global counter
+    
     
     # while True:
     # log = '{"database":"mmt-its","table":"absen","type":"insert","ts":1525257612,"xid":1927081,"commit":true,"position":"master.000006:43124064","data":{"id_absen":"d750c546-dee6-4228-8a91-faef298dfe5b","id_kartu":null,"id_jadwal":"da2a6bd1-b4d0-455d-8a32-362bb41f07b3","waktu_absen":"2018-05-02 17:40:12","nrp":"9211750014008"}}'
@@ -148,31 +147,44 @@ def main():
     # result, ref = ptrn.getTablePattern(log['table'])
     # listOfPattern = ptrn.buildQuery(result, ref, log['data'], log['table'])
     # pprint(listOfPattern)
-    limit = 0;
     
-    while limit < 50:
-        for row in cursor:
-            print(row['id_kelas'])
-            hasilPattern, where = getQuery(row)
-            # time.sleep(0.5)
-            # print(hasilPattern['absen'])
-            
-            absen(hasilPattern['kartu'], where['id_jadwal'])
-            # time.sleep(0.5)
-            # # print()
-            ambilkelas(ptrn.dictOfPattern['mahasiswa']['query'], where)
-            # time.sleep(0.5)
-            # exit()
-            updateJadwal(where)
-            # time.sleep(0.5)
-            deleteJadwal(where)
-            updateKelasMatkul(ptrn.dictOfPattern['kelasmatkul']['query'], where)
-            # time.sleep(0.5)
+    for i in batas:
+        limit = 0
+        counter = 0
+        # os.system("python replicateForTesting.py")
+        db = MySQLdb.connect(host="127.0.0.1",
+                     user="root",         # your username
+                     passwd="liverpoolfc",  # your password
+                     db="mmt-its")
+        query = 'select distinct jadwal.id_kelas from jadwal ORDER BY jadwal.id_kelas ASC'
+        cursor = db.cursor(cursors.DictCursor)
+        cursor.execute(query)
+        while limit < i:
+            for row in cursor:
+                print(row['id_kelas'])
+                hasilPattern, where = getQuery(row)
+                # time.sleep(0.5)
+                # print(hasilPattern['absen'])
+                
+                absen(hasilPattern['kartu'], where['id_jadwal'])
+                # time.sleep(0.5)
+                # # print()
+                ambilkelas(ptrn.dictOfPattern['mahasiswa']['query'], where)
+                # time.sleep(0.5)
+                # exit()
+                updateJadwal(where)
+                # time.sleep(0.5)
+                deleteJadwal(where)
+                updateKelasMatkul(ptrn.dictOfPattern['kelasmatkul']['query'], where)
+                # time.sleep(0.5)
 
-            print('\n')
-            # exit()
-        limit += 1
+                print('\n')
+                # exit()
+            limit += 1
+        # time.sleep(60)
+        os.system("python checkpubsub.py "+str(i)+" "+str(counter)) 
         # exit()
+
     
 if __name__== "__main__":
     awal = time.time()
@@ -190,10 +202,7 @@ if __name__== "__main__":
     # os.system("redis-cli flushall")
     # # exit()
     
-    db = MySQLdb.connect(host="127.0.0.1",
-                     user="root",         # your username
-                     passwd="liverpoolfc",  # your password
-                     db="mmt-its")
+    
        
     ptrn = Pattern()
     ptrn.findPattern('kelas', None, None)

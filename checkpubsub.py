@@ -3,12 +3,13 @@ import os
 import csv
 from openpyxl import Workbook
 import requests
+import sys
 pubsub = {}
 dir_path = os.path.dirname(os.path.realpath(__file__))
-path = dir_path
+path = "/Users/muhammadhilman/hlmn/Project/MMT-SmartCampus/Latihan/server"
 files = [i for i in os.listdir(path) if os.path.isfile(os.path.join(path,i)) and 'benchmarkPubSub' in i]
 for file in files:
-    ea = open(dir_path+"/"+file, 'r')
+    ea = open(path+"/"+file, 'r')
     kelas = file.replace('benchmarkPubSub','')
     kelas = kelas.replace('.txt', '')
     for line in ea:
@@ -64,7 +65,7 @@ for namaRuangan in result['ruangan']:
                     waktuDeliv = float(pubsub[ruangan][line[0]]['waktu'])
                     log = json.loads(line[0])
                     totalWaktu = (waktuDeliv+waktuPublish)
-                    print(log['table']+' -> '+str(totalWaktu))
+                    # print(log['table']+' -> '+str(totalWaktu))
                     ws.append([totalWaktu, log['table']])
                     jumlahLog += 1
                     totalWaktuSemua += totalWaktu
@@ -86,11 +87,17 @@ for namaRuangan in result['ruangan']:
     print('gagal : ' + str(gagal))
 
     wsSemua.append([namaRuangan, jumlahLog/totalWaktuSemua, totalWaktuSemua/jumlahLog, jumlahLog, totalWaktuSemua])
-    wb.save("test"+namaRuangan+".xlsx")
+    
+    wb.save("benchmark/test"+namaRuangan+"-"+sys.argv[1]+".xlsx")
 
 
 print(gagal)
-wbSemua.save("Kesimpulan.xlsx")
+wsSemua.append([sys.argv[2]])
+wbSemua.save("benchmark/Kesimpulan-"+sys.argv[1]+".xlsx")
 print(logGagal)
 
+
+for file in files:
+    os.remove(path+"/"+file)
+os.rename(dir_path+'/benchmark.txt', dir_path+'/benchmark/benchmark'+sys.argv[1]+'.txt')
 # print(dir_path)

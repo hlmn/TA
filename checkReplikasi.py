@@ -11,6 +11,8 @@ import socket
 from openpyxl import Workbook
 import copy
 import requests
+import time
+import datetime
 
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
@@ -48,8 +50,7 @@ def check(query, tableName, ip, id_kelas):
     cursor = list(cursor.fetchall())
     jumlahDiServer = len(hasil)
     jumlahDiMesin = len(cursor)
-    print('Jumlah di Server : '+ str(jumlahDiServer))
-    print('Jumlah di Mesin : '+ str(jumlahDiMesin))    
+    print('Jumlah di Server / Jumlah di Mesin : '+ str(jumlahDiServer)+'/'+ str(jumlahDiMesin))
     # for row in cursor:
     #     if row not in hasil:
     #         print(row)
@@ -87,7 +88,10 @@ for id_kelas in result['ruangan']:
         for row in cursor:
             if row['table_name'] in blacklist:
                 continue
-            print(row['table_name'])
+            ts = time.time()
+            dateTimeString = datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M%:%S")
+            print(dateTimeString+' -> '+row['table_name'])
+            # print()
             query = copy.deepcopy(ptrn.dictOfPattern[row['table_name']]['query'])
             query =  ' UNION '.join(query)
             query = query.replace(socket.gethostname(), str(id_kelas))

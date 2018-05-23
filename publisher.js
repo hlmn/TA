@@ -521,6 +521,12 @@ var initRedis = function(){
 			rabbitMq = amqp.connect('amqp://127.0.0.1:5672').then((conn) => {
 			  	conn.createChannel().then((ch) => {
 					rabbitMqConnection = ch
+					ch.on('close', (err) => {
+						conn.close()
+						.then(()=>{
+							retryRmqConnection()
+						})
+					})
 				})
 				console.log('readyrabbit')
 				conn.on('close', function(err){
@@ -539,6 +545,13 @@ var initRedis = function(){
 			
 			conn.createChannel().then((ch) => {
 				rabbitMqConnection = ch
+				ch.on('close', (err) => {
+					conn.close()
+					.then(()=>{
+						retryRmqConnection()
+					})
+				})
+				
 			})
 			brpopQueue();
 

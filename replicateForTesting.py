@@ -2,7 +2,8 @@ import MySQLdb
 import MySQLdb.cursors as cursors
 import time
 import os
-
+import requests
+import json
 db = MySQLdb.connect(host="127.0.0.1",
                      user="root",         # your username
                      passwd="liverpoolfc")
@@ -31,3 +32,14 @@ os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=0;"')
 os.system('mysql -u root -pliverpoolfc mmtslave < backup'+str(waktu)+'.sql')
 os.system('mysql -u root -pliverpoolfc -e "SET GLOBAL FOREIGN_KEY_CHECKS=1;"')
 os.system("redis-cli flushall")
+
+r = requests.get('http://localhost:9999/get/ruangan')
+result = json.loads(r.text)
+
+for ruangan in result['ruangan']:
+    for socketId in result['ruangan'][ruangan]:
+        ip = result['ip'][socketId]
+        address = "http://"+ip+":8888/start/replikasi/"
+        print('replicating '+ruangan+'...')
+        test = requests.get(address)
+        print(test.text)
